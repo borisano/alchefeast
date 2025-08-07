@@ -9,7 +9,7 @@ RSpec.describe RecipeIngredient, type: :model do
   describe 'validations' do
     let(:recipe) { create(:recipe) }
     let(:ingredient) { create(:ingredient) }
-    
+
     subject { build(:recipe_ingredient, recipe: recipe, ingredient: ingredient) }
 
     it { should validate_uniqueness_of(:recipe_id).scoped_to(:ingredient_id) }
@@ -24,7 +24,7 @@ RSpec.describe RecipeIngredient, type: :model do
     it 'prevents duplicate recipe-ingredient combinations' do
       create(:recipe_ingredient, recipe: recipe, ingredient: ingredient)
       duplicate = build(:recipe_ingredient, recipe: recipe, ingredient: ingredient)
-      
+
       expect(duplicate).not_to be_valid
       expect(duplicate.errors[:recipe_id]).to include('has already been taken')
     end
@@ -33,7 +33,7 @@ RSpec.describe RecipeIngredient, type: :model do
       recipe2 = create(:recipe)
       create(:recipe_ingredient, recipe: recipe, ingredient: ingredient)
       second_recipe_ingredient = build(:recipe_ingredient, recipe: recipe2, ingredient: ingredient)
-      
+
       expect(second_recipe_ingredient).to be_valid
     end
 
@@ -41,7 +41,7 @@ RSpec.describe RecipeIngredient, type: :model do
       ingredient2 = create(:ingredient)
       create(:recipe_ingredient, recipe: recipe, ingredient: ingredient)
       second_recipe_ingredient = build(:recipe_ingredient, recipe: recipe, ingredient: ingredient2)
-      
+
       expect(second_recipe_ingredient).to be_valid
     end
   end
@@ -69,9 +69,9 @@ RSpec.describe RecipeIngredient, type: :model do
   describe '#display_text' do
     let(:ingredient) { create(:ingredient, name: 'flour') }
     let(:recipe_ingredient) do
-      create(:recipe_ingredient, 
+      create(:recipe_ingredient,
              ingredient: ingredient,
-             quantity: 2.0, 
+             quantity: 2.0,
              unit: 'cups',
              raw_text: '2 cups all-purpose flour')
     end
@@ -118,20 +118,20 @@ RSpec.describe RecipeIngredient, type: :model do
     describe 'traits' do
       it 'creates measured quantities' do
         ri = create(:recipe_ingredient, :measured)
-        expect([0.25, 0.5, 0.75, 1, 1.5, 2, 3]).to include(ri.quantity)
-        expect(['cups', 'tablespoons', 'teaspoons']).to include(ri.unit)
+        expect([ 0.25, 0.5, 0.75, 1, 1.5, 2, 3 ]).to include(ri.quantity)
+        expect([ 'cups', 'tablespoons', 'teaspoons' ]).to include(ri.unit)
       end
 
       it 'creates whole item quantities' do
         ri = create(:recipe_ingredient, :whole_items)
         expect(ri.quantity).to be_between(1, 6)
-        expect(['large', 'medium', 'small', 'whole']).to include(ri.unit)
+        expect([ 'large', 'medium', 'small', 'whole' ]).to include(ri.unit)
       end
 
       it 'creates weight-based quantities' do
         ri = create(:recipe_ingredient, :weight_based)
         expect(ri.quantity).to be_between(1, 3)
-        expect(['pounds', 'ounces', 'grams']).to include(ri.unit)
+        expect([ 'pounds', 'ounces', 'grams' ]).to include(ri.unit)
       end
     end
   end

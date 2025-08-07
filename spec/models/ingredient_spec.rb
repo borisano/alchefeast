@@ -8,7 +8,7 @@ RSpec.describe Ingredient, type: :model do
 
   describe 'validations' do
     subject { build(:ingredient, name: 'test_ingredient') }
-    
+
     it { should validate_presence_of(:name) }
     it { should validate_uniqueness_of(:name).case_insensitive }
   end
@@ -92,22 +92,22 @@ RSpec.describe Ingredient, type: :model do
     describe 'traits' do
       it 'creates common ingredients' do
         ingredient = create(:ingredient, :common)
-        expect(['flour', 'sugar', 'eggs', 'butter', 'milk', 'salt']).to include(ingredient.name)
+        expect([ 'flour', 'sugar', 'eggs', 'butter', 'milk', 'salt' ]).to include(ingredient.name)
       end
 
       it 'creates spice ingredients' do
         ingredient = create(:ingredient, :spice)
-        expect(['salt', 'pepper', 'paprika', 'cumin', 'oregano']).to include(ingredient.name)
+        expect([ 'salt', 'pepper', 'paprika', 'cumin', 'oregano' ]).to include(ingredient.name)
       end
 
       it 'creates vegetable ingredients' do
         ingredient = create(:ingredient, :vegetable)
-        expect(['onions', 'garlic', 'tomatoes', 'carrots', 'potatoes']).to include(ingredient.name)
+        expect([ 'onions', 'garlic', 'tomatoes', 'carrots', 'potatoes' ]).to include(ingredient.name)
       end
 
       it 'creates protein ingredients' do
         ingredient = create(:ingredient, :protein)
-        expect(['chicken breast', 'ground beef', 'eggs', 'cheese']).to include(ingredient.name)
+        expect([ 'chicken breast', 'ground beef', 'eggs', 'cheese' ]).to include(ingredient.name)
       end
     end
   end

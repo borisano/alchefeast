@@ -103,12 +103,12 @@ RSpec.describe Recipe, type: :model do
       end
 
       it 'finds recipes with all specified ingredients' do
-        results = Recipe.with_ingredients(['flour', 'sugar'])
+        results = Recipe.with_ingredients([ 'flour', 'sugar' ])
         expect(results).to include(recipe_with_flour_sugar, recipe_with_all_three)
       end
 
       it 'does not include recipes missing any ingredient' do
-        results = Recipe.with_ingredients(['flour', 'sugar', 'eggs'])
+        results = Recipe.with_ingredients([ 'flour', 'sugar', 'eggs' ])
         expect(results).to include(recipe_with_all_three)
         expect(results).not_to include(recipe_with_flour_sugar)
       end
@@ -130,7 +130,7 @@ RSpec.describe Recipe, type: :model do
       let!(:recipe_without_either) { create(:recipe) }
 
       it 'finds recipes with any of the specified ingredients' do
-        results = Recipe.with_any_ingredients(['flour', 'sugar'])
+        results = Recipe.with_any_ingredients([ 'flour', 'sugar' ])
         expect(results).to include(recipe_with_flour, recipe_with_sugar)
         expect(results).not_to include(recipe_without_either)
       end
