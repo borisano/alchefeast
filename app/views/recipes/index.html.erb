@@ -1,0 +1,213 @@
+<% content_for :title, "All Recipes - Alchefeast" %>
+
+<div class="container-fluid">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <%= link_to "Alchefeast", root_path, class: "navbar-brand fw-bold" %>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <%= link_to "Home", root_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "All Recipes", recipes_path, class: "nav-link active" %>
+          </li>
+        </ul>
+        
+        <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
+          <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
+          <button class="btn btn-outline-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="display-5 fw-bold text-primary">
+          <i class="bi bi-book me-2"></i>All Recipes
+        </h1>
+        <p class="lead text-muted">Discover amazing recipes from around the world</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="bi bi-funnel me-2"></i>Filter Recipes
+            </h5>
+            
+            <div class="row">
+              <!-- Category Filter -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Category</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <%= link_to "All", recipes_path, 
+                      class: "btn #{'btn-primary' if params[:category].blank?} #{'btn-outline-primary' unless params[:category].blank?} btn-sm" %>
+                  <% @categories.each do |category| %>
+                    <%= link_to category, recipes_path(category: category), 
+                        class: "btn #{'btn-primary' if params[:category] == category} #{'btn-outline-primary' unless params[:category] == category} btn-sm" %>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Difficulty Filter -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Difficulty</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <%= link_to "All", recipes_path, 
+                      class: "btn #{'btn-success' if params[:difficulty].blank?} #{'btn-outline-success' unless params[:difficulty].blank?} btn-sm" %>
+                  <% @difficulties.each do |difficulty| %>
+                    <%= link_to difficulty, recipes_path(difficulty: difficulty), 
+                        class: "btn #{'btn-success' if params[:difficulty] == difficulty} #{'btn-outline-success' unless params[:difficulty] == difficulty} btn-sm" %>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Ingredient Search -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Find by Ingredients</label>
+                <form action="<%= search_recipes_path %>" method="get" class="d-flex">
+                  <input type="text" class="form-control form-control-sm me-2" 
+                         name="ingredients" placeholder="e.g., chicken, rice">
+                  <button type="submit" class="btn btn-warning btn-sm">
+                    <i class="bi bi-search"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipes Grid -->
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">
+            <%= @recipes.length %> Recipe<%= 's' if @recipes.length != 1 %> Found
+            <% if params[:category].present? %>
+              in <span class="text-primary"><%= params[:category] %></span>
+            <% end %>
+            <% if params[:difficulty].present? %>
+              - <span class="text-success"><%= params[:difficulty] %></span> difficulty
+            <% end %>
+          </h4>
+        </div>
+        
+        <div class="row">
+          <% @recipes.each do |recipe| %>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+              <div class="card h-100 shadow-sm recipe-card">
+                <div class="position-relative">
+                  <img src="<%= recipe[:image_url] %>" class="card-img-top" alt="<%= recipe[:title] %>" 
+                       style="height: 200px; object-fit: cover;">
+                  
+                  <!-- Category Badge -->
+                  <span class="position-absolute top-0 start-0 m-2 badge bg-primary">
+                    <%= recipe[:category] %>
+                  </span>
+                  
+                  <!-- Difficulty Badge -->
+                  <span class="position-absolute top-0 end-0 m-2 badge bg-<%= recipe[:difficulty] == 'Easy' ? 'success' : recipe[:difficulty] == 'Medium' ? 'warning' : 'danger' %>">
+                    <%= recipe[:difficulty] %>
+                  </span>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title mb-2"><%= recipe[:title] %></h5>
+                  <p class="card-text text-muted small flex-grow-1"><%= recipe[:description] %></p>
+                  
+                  <!-- Recipe Stats -->
+                  <div class="row g-1 mb-3 small">
+                    <div class="col-6">
+                      <i class="bi bi-clock text-primary me-1"></i><%= recipe[:total_time] %>min
+                    </div>
+                    <div class="col-6">
+                      <i class="bi bi-people text-success me-1"></i><%= recipe[:servings] %>
+                    </div>
+                    <div class="col-6">
+                      <i class="bi bi-star-fill text-warning me-1"></i><%= recipe[:ratings] %>
+                    </div>
+                    <div class="col-6">
+                      <i class="bi bi-heart text-danger me-1"></i>Popular
+                    </div>
+                  </div>
+                  
+                  <!-- Ingredients Preview -->
+                  <% if recipe[:ingredients].present? %>
+                    <div class="mb-3">
+                      <h6 class="small text-muted mb-1">Key Ingredients:</h6>
+                      <div class="d-flex flex-wrap gap-1">
+                        <% recipe[:ingredients].first(3).each do |ingredient| %>
+                          <span class="badge bg-light text-dark small"><%= ingredient %></span>
+                        <% end %>
+                        <% if recipe[:ingredients].length > 3 %>
+                          <span class="badge bg-secondary small">+<%= recipe[:ingredients].length - 3 %> more</span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                  
+                  <div class="mt-auto">
+                    <%= link_to "View Recipe", recipe_path(recipe[:id]), class: "btn btn-primary w-100" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <% if @recipes.empty? %>
+          <div class="text-center py-5">
+            <div class="mb-4">
+              <i class="bi bi-search display-1 text-muted"></i>
+            </div>
+            <h4 class="text-muted">No recipes found</h4>
+            <p class="text-muted">Try adjusting your filters or search for different ingredients.</p>
+            <%= link_to "View All Recipes", recipes_path, class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Alchefeast</h5>
+          <p class="mb-0">Making cooking easier, one ingredient at a time.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0">&copy; 2025 Alchefeast. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<style>
+.recipe-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+}
+</style>

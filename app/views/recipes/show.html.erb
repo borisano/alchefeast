@@ -1,0 +1,270 @@
+<% content_for :title, "#{@recipe[:title]} - Alchefeast" %>
+
+<div class="container-fluid">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <%= link_to "Alchefeast", root_path, class: "navbar-brand fw-bold" %>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <%= link_to "Home", root_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
+          </li>
+        </ul>
+        
+        <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
+          <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
+          <button class="btn btn-outline-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Back Button -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <%= link_to recipes_path, class: "btn btn-outline-secondary" do %>
+          <i class="bi bi-arrow-left me-2"></i>Back to Recipes
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recipe Header -->
+    <div class="row mb-4">
+      <div class="col-lg-8">
+        <h1 class="display-5 fw-bold text-primary mb-3"><%= @recipe[:title] %></h1>
+        <p class="lead text-muted mb-4"><%= @recipe[:description] %></p>
+        
+        <!-- Recipe Meta Info -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="d-flex align-items-center">
+              <div class="bg-primary text-white rounded-circle p-2 me-3">
+                <i class="bi bi-clock"></i>
+              </div>
+              <div>
+                <div class="fw-semibold"><%= @recipe[:total_time] %> min</div>
+                <small class="text-muted">Total Time</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-6 col-md-3">
+            <div class="d-flex align-items-center">
+              <div class="bg-success text-white rounded-circle p-2 me-3">
+                <i class="bi bi-people"></i>
+              </div>
+              <div>
+                <div class="fw-semibold"><%= @recipe[:servings] %></div>
+                <small class="text-muted">Servings</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-6 col-md-3">
+            <div class="d-flex align-items-center">
+              <div class="bg-warning text-white rounded-circle p-2 me-3">
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <div>
+                <div class="fw-semibold"><%= @recipe[:ratings] %>/5</div>
+                <small class="text-muted">Rating</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-6 col-md-3">
+            <div class="d-flex align-items-center">
+              <div class="bg-<%= @recipe[:difficulty] == 'Easy' ? 'success' : @recipe[:difficulty] == 'Medium' ? 'warning' : 'danger' %> text-white rounded-circle p-2 me-3">
+                <i class="bi bi-speedometer2"></i>
+              </div>
+              <div>
+                <div class="fw-semibold"><%= @recipe[:difficulty] %></div>
+                <small class="text-muted">Difficulty</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-4">
+          <% @recipe[:tags].each do |tag| %>
+            <span class="badge bg-primary me-2 mb-2"><%= tag %></span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <img src="<%= @recipe[:image_url] %>" class="img-fluid rounded shadow" alt="<%= @recipe[:title] %>">
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Ingredients -->
+      <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">
+              <i class="bi bi-basket2-fill me-2"></i>Ingredients
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mb-0">
+              <% @recipe[:ingredients].each do |ingredient| %>
+                <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                  <span><%= ingredient[:name] %></span>
+                  <span class="text-muted fw-semibold"><%= ingredient[:amount] %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions & Nutrition -->
+      <div class="col-lg-8">
+        <!-- Instructions -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="card-title mb-0">
+              <i class="bi bi-list-ol me-2"></i>Instructions
+            </h4>
+          </div>
+          <div class="card-body">
+            <ol class="list-group list-group-numbered list-group-flush">
+              <% @recipe[:instructions].each_with_index do |instruction, index| %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-normal"><%= instruction %></div>
+                  </div>
+                  <span class="badge bg-success rounded-pill"><%= index + 1 %></span>
+                </li>
+              <% end %>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Nutrition Information -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-info text-white">
+            <h4 class="card-title mb-0">
+              <i class="bi bi-graph-up me-2"></i>Nutrition Information
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-3">
+                <div class="border-end">
+                  <div class="fs-4 fw-bold text-primary"><%= @recipe[:nutrition][:calories] %></div>
+                  <small class="text-muted">Calories</small>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="border-end">
+                  <div class="fs-4 fw-bold text-success"><%= @recipe[:nutrition][:protein] %></div>
+                  <small class="text-muted">Protein</small>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="border-end">
+                  <div class="fs-4 fw-bold text-warning"><%= @recipe[:nutrition][:carbs] %></div>
+                  <small class="text-muted">Carbs</small>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="fs-4 fw-bold text-danger"><%= @recipe[:nutrition][:fat] %></div>
+                <small class="text-muted">Fat</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-4">
+                <button class="btn btn-outline-primary w-100">
+                  <i class="bi bi-heart me-2"></i>Save Recipe
+                </button>
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-outline-success w-100">
+                  <i class="bi bi-printer me-2"></i>Print Recipe
+                </button>
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-outline-info w-100">
+                  <i class="bi bi-share me-2"></i>Share Recipe
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cooking Tips -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-lightbulb text-warning me-2"></i>Cooking Tips
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="text-primary">
+                  <i class="bi bi-clock-history me-1"></i>Time Management
+                </h6>
+                <ul class="list-unstyled">
+                  <li class="mb-2">• Prep time: <%= @recipe[:prep_time] %> minutes</li>
+                  <li class="mb-2">• Cook time: <%= @recipe[:cook_time] %> minutes</li>
+                  <li class="mb-2">• Prepare all ingredients before cooking</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="text-success">
+                  <i class="bi bi-check-circle me-1"></i>Success Tips
+                </h6>
+                <ul class="list-unstyled">
+                  <li class="mb-2">• Read the entire recipe before starting</li>
+                  <li class="mb-2">• Use fresh, quality ingredients</li>
+                  <li class="mb-2">• Taste and adjust seasoning as needed</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Alchefeast</h5>
+          <p class="mb-0">Making cooking easier, one ingredient at a time.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0">&copy; 2025 Alchefeast. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

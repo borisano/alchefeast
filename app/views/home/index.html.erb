@@ -1,0 +1,191 @@
+<% content_for :title, "Alchefeast - Find Recipes with Your Ingredients" %>
+
+<div class="container-fluid">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <%= link_to "Alchefeast", root_path, class: "navbar-brand fw-bold" %>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <%= link_to "Home", root_path, class: "nav-link active" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
+          </li>
+        </ul>
+        
+        <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
+          <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
+          <button class="btn btn-outline-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero-section bg-light py-5 mb-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold text-primary mb-3">
+            Find Perfect Recipes with Your Ingredients
+          </h1>
+          <p class="lead mb-4">
+            Don't know what to cook? Tell us what ingredients you have at home, 
+            and we'll suggest delicious recipes you can make right now!
+          </p>
+          
+          <!-- Ingredient Search Form -->
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <form action="<%= search_recipes_path %>" method="get">
+                <div class="mb-3">
+                  <label for="ingredients" class="form-label fw-semibold">
+                    <i class="bi bi-basket2-fill text-success me-2"></i>
+                    What ingredients do you have?
+                  </label>
+                  <input type="text" class="form-control form-control-lg" id="ingredients" 
+                         name="ingredients" placeholder="e.g., chicken, tomatoes, onions">
+                  <div class="form-text">Separate multiple ingredients with commas</div>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                  <i class="bi bi-search me-2"></i>Find Recipes
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <img src="https://via.placeholder.com/500x400?text=Cooking+Together" 
+               class="img-fluid rounded shadow" alt="Cooking illustration">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popular Ingredients -->
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-12">
+        <h3 class="mb-3">
+          <i class="bi bi-star-fill text-warning me-2"></i>Popular Ingredients
+        </h3>
+        <div class="d-flex flex-wrap gap-2">
+          <% @popular_ingredients.each do |ingredient| %>
+            <%= link_to search_recipes_path(ingredients: ingredient), 
+                        class: "btn btn-outline-primary btn-sm" do %>
+              <i class="bi bi-plus-circle me-1"></i><%= ingredient %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Recipes -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>
+            <i class="bi bi-heart-fill text-danger me-2"></i>Featured Recipes
+          </h3>
+          <%= link_to "View All Recipes", recipes_path, class: "btn btn-primary" %>
+        </div>
+        
+        <div class="row">
+          <% @featured_recipes.each do |recipe| %>
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="card h-100 shadow-sm">
+                <img src="<%= recipe[:image_url] %>" class="card-img-top" alt="<%= recipe[:title] %>" style="height: 200px; object-fit: cover;">
+                
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title mb-2"><%= recipe[:title] %></h5>
+                  <p class="card-text text-muted flex-grow-1"><%= recipe[:description] %></p>
+                  
+                  <!-- Recipe Stats -->
+                  <div class="row g-2 mb-3">
+                    <div class="col-6">
+                      <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i><%= recipe[:total_time] %> min
+                      </small>
+                    </div>
+                    <div class="col-6">
+                      <small class="text-muted">
+                        <i class="bi bi-people me-1"></i><%= recipe[:servings] %> servings
+                      </small>
+                    </div>
+                    <div class="col-6">
+                      <small class="text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i><%= recipe[:ratings] %>
+                      </small>
+                    </div>
+                    <div class="col-6">
+                      <span class="badge bg-<%= recipe[:difficulty] == 'Easy' ? 'success' : recipe[:difficulty] == 'Medium' ? 'warning' : 'danger' %>">
+                        <%= recipe[:difficulty] %>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <%= link_to "View Recipe", recipe_path(recipe[:id]), class: "btn btn-primary" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <h3 class="text-center mb-4">Why Choose Alchefeast?</h3>
+        <div class="row">
+          <div class="col-md-4 text-center mb-4">
+            <div class="feature-icon mb-3">
+              <i class="bi bi-search display-1 text-primary"></i>
+            </div>
+            <h5>Smart Search</h5>
+            <p class="text-muted">Find recipes based on ingredients you already have at home</p>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="feature-icon mb-3">
+              <i class="bi bi-clock-history display-1 text-success"></i>
+            </div>
+            <h5>Save Time</h5>
+            <p class="text-muted">No more wondering what to cook or making unnecessary grocery trips</p>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="feature-icon mb-3">
+              <i class="bi bi-star display-1 text-warning"></i>
+            </div>
+            <h5>Quality Recipes</h5>
+            <p class="text-muted">Curated collection of tested and rated recipes from around the world</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Alchefeast</h5>
+          <p class="mb-0">Making cooking easier, one ingredient at a time.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0">&copy; 2025 Alchefeast. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
