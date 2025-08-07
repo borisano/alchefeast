@@ -1,6 +1,6 @@
 namespace :recipes do
   desc "Import recipes from a JSON file"
-  task :import, [:file_path] => :environment do |t, args|
+  task :import, [ :file_path ] => :environment do |t, args|
     if args[:file_path].blank?
       puts "Usage: rake recipes:import[path/to/recipes.json]"
       puts "Example: rake recipes:import[test_recipes.json]"
@@ -8,9 +8,9 @@ namespace :recipes do
     end
 
     file_path = args[:file_path]
-    
+
     # Handle relative paths from Rails root
-    unless file_path.start_with?('/')
+    unless file_path.start_with?("/")
       file_path = Rails.root.join(file_path).to_s
     end
 
@@ -50,13 +50,13 @@ namespace :recipes do
   end
 
   desc "Import test recipes (first 5 from recipes-en.json)"
-  task :import_test => :environment do
-    test_file = Rails.root.join('test_recipes.json')
-    
+  task import_test: :environment do
+    test_file = Rails.root.join("test_recipes.json")
+
     unless File.exist?(test_file)
       puts "Error: test_recipes.json not found. Creating it first..."
-      
-      main_file = Rails.root.join('recipes-en.json')
+
+      main_file = Rails.root.join("recipes-en.json")
       unless File.exist?(main_file)
         puts "Error: recipes-en.json not found in Rails root"
         exit 1
@@ -79,14 +79,14 @@ namespace :recipes do
   end
 
   desc "Show import statistics"
-  task :stats => :environment do
+  task stats: :environment do
     puts "Recipe Database Statistics"
     puts "=" * 30
     puts "Recipes: #{Recipe.count}"
     puts "Ingredients: #{Ingredient.count}"
     puts "Recipe-Ingredient associations: #{RecipeIngredient.count}"
     puts ""
-    
+
     if Recipe.any?
       puts "Recipe breakdown by category:"
       Recipe.group(:category).count.sort_by { |_, count| -count }.each do |category, count|
@@ -94,14 +94,14 @@ namespace :recipes do
         puts "  #{category_name}: #{count}"
       end
       puts ""
-      
+
       puts "Recipe breakdown by cuisine:"
       Recipe.group(:cuisine).count.sort_by { |_, count| -count }.each do |cuisine, count|
         cuisine_name = cuisine.present? ? cuisine : "(no cuisine)"
         puts "  #{cuisine_name}: #{count}"
       end
       puts ""
-      
+
       puts "Top 10 most common ingredients:"
       Ingredient.joins(:recipe_ingredients)
                .group(:name)
@@ -115,17 +115,17 @@ namespace :recipes do
   end
 
   desc "Clear all recipe data"
-  task :clear => :environment do
+  task clear: :environment do
     print "Are you sure you want to delete all recipes and ingredients? (y/N): "
     response = STDIN.gets.chomp.downcase
-    
-    if response == 'y' || response == 'yes'
+
+    if response == "y" || response == "yes"
       puts "Clearing all recipe data..."
-      
+
       RecipeIngredient.delete_all
       Recipe.delete_all
       Ingredient.delete_all
-      
+
       puts "All recipe data cleared."
     else
       puts "Operation cancelled."

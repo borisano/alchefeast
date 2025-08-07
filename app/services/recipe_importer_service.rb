@@ -1,4 +1,4 @@
-require 'set'
+require "set"
 
 class RecipeImporterService
   attr_reader :results, :errors
@@ -106,13 +106,13 @@ class RecipeImporterService
 
       # Parse the ingredient text to extract name and quantity/unit
       parsed_ingredient = parse_ingredient_text(ingredient_text)
-      
+
       # Skip if we've already added this ingredient to this recipe
       next if added_ingredients.include?(parsed_ingredient[:name])
-      
+
       # Find or create the ingredient
       ingredient = find_or_create_ingredient(parsed_ingredient[:name])
-      
+
       # Create the recipe_ingredient association
       RecipeIngredient.create!(
         recipe: recipe,
@@ -121,7 +121,7 @@ class RecipeImporterService
         quantity: parsed_ingredient[:quantity],
         unit: parsed_ingredient[:unit]
       )
-      
+
       # Mark this ingredient as added
       added_ingredients.add(parsed_ingredient[:name])
     end
