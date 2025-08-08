@@ -26,7 +26,7 @@ class RecipesController < ApplicationController
     # Handle navbar search input (could be recipe name or comma-separated ingredients)
     if params[:search_input].present?
       search_input = params[:search_input].strip
-      if search_input.include?(',')
+      if search_input.include?(",")
         # Treat as ingredient search
         params[:ingredients] = search_input
       else

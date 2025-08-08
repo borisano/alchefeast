@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Recipes", type: :request do
   describe "GET /recipes" do
@@ -16,7 +16,7 @@ RSpec.describe "Recipes", type: :request do
   end
 
   describe "GET /recipes/:id" do
-    let!(:test_recipe) { create(:recipe, title: 'Test Recipe for Request Spec') }
+    let!(:test_recipe) { create(:recipe, title: "Test Recipe for Request Spec") }
 
     it "returns http success for valid id" do
       get "/recipes/#{test_recipe.id}"
@@ -77,9 +77,9 @@ RSpec.describe "Recipes", type: :request do
 
     it "treats comma-separated search_input as ingredient search" do
       # Create test data
-      recipe = create(:recipe, title: 'Test Recipe')
-      ingredient1 = create(:ingredient, name: 'eggs')
-      ingredient2 = create(:ingredient, name: 'cheese')
+      recipe = create(:recipe, title: "Test Recipe")
+      ingredient1 = create(:ingredient, name: "eggs")
+      ingredient2 = create(:ingredient, name: "cheese")
       create(:recipe_ingredient, recipe: recipe, ingredient: ingredient1)
       create(:recipe_ingredient, recipe: recipe, ingredient: ingredient2)
 
@@ -91,7 +91,7 @@ RSpec.describe "Recipes", type: :request do
     end
 
     it "treats single search_input as recipe name search" do
-      recipe = create(:recipe, title: 'Delicious Pasta Recipe')
+      recipe = create(:recipe, title: "Delicious Pasta Recipe")
 
       get "/recipes/search", params: { search_input: "pasta" }
       expect(response).to have_http_status(:success)

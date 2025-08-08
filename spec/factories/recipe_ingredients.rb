@@ -8,7 +8,7 @@ FactoryBot.define do
     # Set raw_text after other attributes are set, but only if not already set
     after(:build) do |recipe_ingredient|
       if recipe_ingredient.raw_text.blank?
-        recipe_ingredient.raw_text = "#{recipe_ingredient.quantity} #{recipe_ingredient.unit} #{recipe_ingredient.ingredient&.name || 'ingredient'}"
+        recipe_ingredient.raw_text = "#{recipe_ingredient.quantity} #{recipe_ingredient.unit} #{recipe_ingredient.ingredient&.name || "ingredient"}"
       end
     end
 
