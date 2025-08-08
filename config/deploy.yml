@@ -2,12 +2,12 @@
 service: alchefeast
 
 # Name of the container image.
-image: your-user/alchefeast
+image: <%= ENV.fetch("DOCKER_IMAGE_NAME", "borisano/alchefeast") %>
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - <%= ENV.fetch("DEPLOYMENT_IP", "16.170.188.85") %>
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -18,14 +18,14 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: true
-  host: app.example.com
+  ssl: <%= ENV.fetch("DEPLOYMENT_SSL_ENABLED", "true") %>
+  host: <%= ENV.fetch("DEPLOYMENT_HOST", "alchefeast.borisano.com") %>
 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
-  username: your-user
+  username: <%= ENV.fetch("DOCKER_REGISTRY_USERNAME", "borisano") %>
 
   # Always use an access token rather than real password when possible.
   password:
@@ -88,8 +88,8 @@ builder:
   #   - RAILS_MASTER_KEY
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+ssh:
+  user: <%= ENV.fetch("DEPLOYMENT_SSH_USER", "ubuntu") %>
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
