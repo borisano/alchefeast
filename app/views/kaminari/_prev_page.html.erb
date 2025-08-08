@@ -1,0 +1,5 @@
+<li class="page-item">
+  <%= link_to_unless current_page.first?, 'Previous', url, rel: 'prev', remote: remote, class: 'page-link' do %>
+    <span class="page-link text-muted">Previous</span>
+  <% end %>
+</li>

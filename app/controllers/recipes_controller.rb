@@ -8,11 +8,14 @@ class RecipesController < ApplicationController
       @recipes = @recipes.where(category: params[:category])
     end
 
-    # Get available categories from database
-    @categories = Recipe.distinct.pluck(:category).compact.reject(&:blank?)
+    # Add pagination
+    @recipes = @recipes.page(params[:page]).per(12)
 
-    # Fallback to empty arrays if no data
-    @categories = [ "Italian", "Indian", "Salad", "Asian", "Dessert" ] if @categories.empty?
+    # Get top 5 most popular categories (cached for 1 week)
+    @popular_categories = Recipe.popular_categories
+
+    # Fallback to hardcoded categories if cache returns empty
+    @popular_categories = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ] if @popular_categories.empty?
   end
 
   def show
@@ -63,7 +66,8 @@ class RecipesController < ApplicationController
       end
     end
 
-    @recipes = @recipes.limit(20) # Limit results for performance
+    # Add pagination
+    @recipes = @recipes.page(params[:page]).per(12)
 
     # Get all available ingredients for autocomplete/suggestions
     @all_ingredients = Ingredient.distinct.pluck(:name).sort

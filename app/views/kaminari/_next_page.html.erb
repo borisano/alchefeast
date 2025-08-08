@@ -1,0 +1,5 @@
+<li class="page-item">
+  <%= link_to_unless current_page.last?, 'Next', url, rel: 'next', remote: remote, class: 'page-link' do %>
+    <span class="page-link text-muted">Next</span>
+  <% end %>
+</li>
