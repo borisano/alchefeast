@@ -106,10 +106,15 @@ RSpec.describe "Recipe Grid Turbo Frame", type: :system do
         click_button class: "btn-warning"
       end
 
-      # Should redirect to search page with results
-      expect(current_path).to eq(search_recipes_path)
-      expect(page).to have_content("Chicken Curry")
-      expect(page).not_to have_content("Beef Stew")
+      # Should stay on recipes page but with search parameters
+      expect(current_path).to eq(recipes_path)
+      expect(current_url).to include("ingredients=chicken")
+
+      # Should update the recipes grid with filtered results
+      within 'turbo-frame[id="recipes-grid"]' do
+        expect(page).to have_content("Chicken Curry")
+        expect(page).not_to have_content("Beef Stew")
+      end
     end
   end
 

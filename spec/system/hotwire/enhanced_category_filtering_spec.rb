@@ -226,11 +226,11 @@ RSpec.describe "Enhanced Category Filtering", type: :system do
       within 'turbo-frame[id="recipes-grid"]' do
         expect(page).to have_content("4 Recipes Found")
         expect(page).to have_content("in Everyday Cooking")
-        
+
         everyday_recipes.each do |recipe|
           expect(page).to have_content(recipe.title)
         end
-        
+
         (italian_recipes + mexican_recipes).each do |recipe|
           expect(page).not_to have_content(recipe.title)
         end

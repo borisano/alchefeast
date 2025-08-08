@@ -23,7 +23,7 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
     tomato_ingredient = create(:ingredient, name: "tomatoes")
     create(:recipe_ingredient, recipe: tomato_recipe, ingredient: tomato_ingredient, raw_text: "4 large tomatoes")
 
-    [chicken_recipe, beef_recipe, pasta_recipe, tomato_recipe]
+    [ chicken_recipe, beef_recipe, pasta_recipe, tomato_recipe ]
   end
 
   describe "search term preservation" do
@@ -48,7 +48,7 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
 
     it "preserves search criteria when navigating pagination" do
       # Create enough recipes to trigger pagination
-      15.times { |i| 
+      15.times { |i|
         recipe = create(:recipe, title: "Chicken Recipe #{i}")
         chicken_ingredient = Ingredient.find_or_create_by(name: "chicken")
         create(:recipe_ingredient, recipe: recipe, ingredient: chicken_ingredient, raw_text: "chicken")
@@ -66,7 +66,7 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
       # Navigate to page 2 if it exists
       if page.has_link?("2")
         click_link "2"
-        
+
         # Search criteria should be preserved
         expect(find_field("search_ingredients").value).to eq("chicken")
         expect(current_url).to include("ingredients=chicken")
@@ -83,12 +83,17 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
         click_button class: "btn-warning"
       end
 
-      # Should redirect to search page
-      expect(current_path).to eq(search_recipes_path)
-      
-      # Search term should be preserved in the search page form
-      expect(find_field("search_ingredients").value).to eq("chicken")
-      expect(page).to have_content("Chicken Curry")
+      # Should stay on recipes page with search parameters
+      expect(current_path).to eq(recipes_path)
+      expect(current_url).to include("ingredients=chicken")
+
+      # Search term should be preserved in the form field on index page
+      expect(find_field("ingredients").value).to eq("chicken")
+
+      # Results should be filtered
+      within 'turbo-frame[id="recipes-grid"]' do
+        expect(page).to have_content("Chicken Curry")
+      end
     end
   end
 
@@ -122,7 +127,7 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
       # Should show updated results
       expect(find_field("search_query").value).to eq("")
       expect(find_field("search_ingredients").value).to eq("beef")
-      
+
       # Should show recipes that match the new criteria
       expect(page).to have_content("Beef Stew")
     end
@@ -166,7 +171,7 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
 
       # Should show recipe with highlighted ingredients
       expect(page).to have_content("Chicken Curry")
-      
+
       # The recipe card should show matching ingredients (based on our existing implementation)
       within('.recipe-card') do
         expect(page).to have_content("Chicken") # Capital C since ingredient names are displayed properly
@@ -212,9 +217,9 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
       # Browse All Recipes link appears when there are no results
       expect(page).to have_content("No recipes found")
       expect(page).to have_link("Browse All Recipes")
-      
+
       click_link "Browse All Recipes"
-      
+
       expect(current_path).to eq(recipes_path)
     end
 
@@ -226,14 +231,14 @@ RSpec.describe "Enhanced Search Functionality", type: :system do
 
       # Check that search parameters are in URL
       expect(current_url).to include("q=pasta")
-      
+
       # Navigate to no results page to access Browse All Recipes link
       fill_in "search_query", with: "nonexistent"
       click_button "Search Recipes"
-      
+
       expect(current_url).to include("q=nonexistent")
       expect(page).to have_link("Browse All Recipes")
-      
+
       # URL-based navigation should work
       visit search_recipes_path(q: "pasta")
       expect(find_field("search_query").value).to eq("pasta")

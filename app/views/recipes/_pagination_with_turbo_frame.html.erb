@@ -1,0 +1,11 @@
+<%# Pagination wrapper that adds turbo frame data to all links %>
+<div class="pagination-wrapper" data-controller="turbo-pagination" data-turbo-pagination-frame-value="recipes-grid">
+  <%= paginate recipes, 
+      window: 2, 
+      params: { 
+        category: params[:category], 
+        q: params[:q], 
+        ingredients: params[:ingredients],
+        search_type: params[:search_type]
+      }.compact %>
+</div>

@@ -18,12 +18,12 @@ RSpec.describe "Advanced Pagination with Turbo Frames", type: :system do
       within 'turbo-frame[id="recipes-grid"]' do
         expect(page).to have_content("25 Recipes Found")
         expect(page).to have_content("Showing 1-12 of 25 recipes")
-        
+
         # Should show first 12 recipes
         (0..11).each do |i|
           expect(page).to have_content("Recipe #{i.to_s.rjust(2, '0')}")
         end
-        
+
         # Should not show recipes from page 2
         expect(page).not_to have_content("Recipe 12")
       end
@@ -36,12 +36,12 @@ RSpec.describe "Advanced Pagination with Turbo Frames", type: :system do
       # Should now show page 2 content
       within 'turbo-frame[id="recipes-grid"]' do
         expect(page).to have_content("Showing 13-24 of 25 recipes")
-        
+
         # Should show recipes 12-23 (0-indexed in creation)
         (12..23).each do |i|
           expect(page).to have_content("Recipe #{i.to_s.rjust(2, '0')}")
         end
-        
+
         # Should not show recipes from page 1
         expect(page).not_to have_content("Recipe 01")
       end
@@ -85,7 +85,7 @@ RSpec.describe "Advanced Pagination with Turbo Frames", type: :system do
         expect(page).to have_link("2")
         expect(page).to have_link("Previous")
         expect(page).not_to have_link("Next")
-        
+
         # Should show the remaining recipe
         expect(page).to have_content("Showing 25-25 of 25 recipes")
         expect(page).to have_content("Recipe 24")
@@ -203,7 +203,7 @@ RSpec.describe "Advanced Pagination with Turbo Frames", type: :system do
       within 'turbo-frame[id="recipes-grid"]' do
         expect(page).to have_content("12 Recipes Found")
         expect(page).to have_content("Showing 1-12 of 12 recipes")
-        
+
         # Should not have pagination controls
         expect(page).not_to have_link("2")
         expect(page).not_to have_link("Next")
@@ -228,10 +228,10 @@ RSpec.describe "Advanced Pagination with Turbo Frames", type: :system do
       within 'turbo-frame[id="recipes-grid"]' do
         # Should have properly structured pagination
         expect(page).to have_css('.pagination')
-        
+
         # Current page should be identifiable (Bootstrap classes)
         expect(page).to have_css('.page-item.active')
-        
+
         # Links should be navigable
         expect(page).to have_link("2")
         expect(page).to have_link("Next")
