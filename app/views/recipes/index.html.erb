@@ -39,11 +39,28 @@
                   </div>
                 </div>
                 
+                <!-- Recipe Name Search -->
+                <div class="col-md-4 mb-3">
+                  <label class="form-label fw-semibold">Find by Recipe Name</label>
+                  <%= form_with url: search_recipes_path, method: :get, local: true, class: "d-flex", data: { turbo_frame: "recipes-grid" } do |form| %>
+                    <%= form.text_field :q, 
+                        value: params[:q], 
+                        placeholder: "e.g., pasta, curry", 
+                        class: "form-control form-control-sm me-2" %>
+                    <%= form.submit class: "btn btn-primary btn-sm" do %>
+                      <i class="bi bi-search"></i>
+                    <% end %>
+                  <% end %>
+                </div>
+                
                 <!-- Ingredient Search -->
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                   <label class="form-label fw-semibold">Find by Ingredients</label>
                   <%= form_with url: search_recipes_path, method: :get, local: true, class: "d-flex", data: { turbo_frame: "recipes-grid" } do |form| %>
-                    <%= form.text_field :ingredients, placeholder: "e.g., chicken, rice", class: "form-control form-control-sm me-2" %>
+                    <%= form.text_field :ingredients, 
+                        value: params[:ingredients], 
+                        placeholder: "e.g., chicken, rice", 
+                        class: "form-control form-control-sm me-2" %>
                     <%= form.submit class: "btn btn-warning btn-sm" do %>
                       <i class="bi bi-search"></i>
                     <% end %>
