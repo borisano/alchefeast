@@ -10,7 +10,7 @@ RSpec.describe "Home", type: :request do
     it "contains expected content" do
       get "/"
       expect(response.body).to include("Alchefeast")
-      expect(response.body).to include("Find Perfect Recipes with Your Ingredients")
+      expect(response.body).to include("What Potion Are We Brewing Today?")
       expect(response.body).to include("Featured Recipes")
     end
   end

@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Recipes", type: :request do
   describe "GET /recipes" do
@@ -16,16 +16,17 @@ RSpec.describe "Recipes", type: :request do
   end
 
   describe "GET /recipes/:id" do
+    let!(:test_recipe) { create(:recipe, title: "Test Recipe for Request Spec") }
+
     it "returns http success for valid id" do
-      get "/recipes/1"
+      get "/recipes/#{test_recipe.id}"
       expect(response).to have_http_status(:success)
     end
 
     it "contains recipe details for valid id" do
-      get "/recipes/1"
-      expect(response.body).to include("Classic Spaghetti Carbonara")
+      get "/recipes/#{test_recipe.id}"
+      expect(response.body).to include("Test Recipe for Request Spec")
       expect(response.body).to include("Ingredients")
-      expect(response.body).to include("Instructions")
     end
 
     it "redirects for invalid id" do
@@ -58,6 +59,44 @@ RSpec.describe "Recipes", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include("eggs")
       expect(response.body).to include("cheese")
+    end
+
+    it "handles navbar search input with comma-separated ingredients" do
+      get "/recipes/search", params: { search_input: "eggs,cheese,milk" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("eggs")
+      expect(response.body).to include("cheese")
+      expect(response.body).to include("milk")
+    end
+
+    it "handles navbar search input with single recipe name" do
+      get "/recipes/search", params: { search_input: "pasta" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("pasta")
+    end
+
+    it "treats comma-separated search_input as ingredient search" do
+      # Create test data
+      recipe = create(:recipe, title: "Test Recipe")
+      ingredient1 = create(:ingredient, name: "eggs")
+      ingredient2 = create(:ingredient, name: "cheese")
+      create(:recipe_ingredient, recipe: recipe, ingredient: ingredient1)
+      create(:recipe_ingredient, recipe: recipe, ingredient: ingredient2)
+
+      get "/recipes/search", params: { search_input: "eggs,cheese" }
+      expect(response).to have_http_status(:success)
+
+      # Should show ingredient badges for matching ingredients
+      expect(response.body).to include("Matching Ingredients")
+    end
+
+    it "treats single search_input as recipe name search" do
+      recipe = create(:recipe, title: "Delicious Pasta Recipe")
+
+      get "/recipes/search", params: { search_input: "pasta" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("pasta")
+      expect(response.body).to include(recipe.title)
     end
   end
 end

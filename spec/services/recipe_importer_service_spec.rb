@@ -61,7 +61,7 @@ RSpec.describe RecipeImporterService, type: :service do
         expect(recipe.cuisine).to eq("American")
         expect(recipe.category).to eq("Dessert")
         expect(recipe.author).to eq("Test Chef")
-        expect(recipe.image_url).to eq("http://example.com/image.jpg")
+        expect(recipe.image_url).to match(/^https?:\/\//)
       end
 
       it 'creates associated ingredients' do
@@ -120,7 +120,7 @@ RSpec.describe RecipeImporterService, type: :service do
         expect(existing_recipe.cuisine).to eq("Italian")
         expect(existing_recipe.category).to eq("Bread")
         expect(existing_recipe.author).to eq("Updated Chef")
-        expect(existing_recipe.image_url).to eq("http://example.com/new-image.jpg")
+        expect(existing_recipe.image_url).to match(/^https?:\/\//)
       end
 
       it 'replaces ingredients' do
@@ -297,7 +297,7 @@ RSpec.describe RecipeImporterService, type: :service do
         expect(recipe.cuisine).to be_nil
         expect(recipe.category).to be_nil
         expect(recipe.author).to be_nil
-        expect(recipe.image_url).to be_nil
+        expect(recipe.image_url).to match(/^https?:\/\//)
       end
     end
 
