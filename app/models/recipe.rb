@@ -60,6 +60,25 @@ class Recipe < ApplicationRecord
     "https://via.placeholder.com/400x300/007bff/ffffff?text=#{title.gsub(' ', '+')}"
   end
 
+  # Get top 5 most popular categories (cached for 1 week)
+  def self.popular_categories
+    Rails.cache.fetch("popular_categories", expires_in: 1.week) do
+      Recipe.group(:category)
+            .count
+            .sort_by(&:last)
+            .reverse
+            .first(5)
+            .map(&:first)
+            .compact
+            .reject(&:blank?)
+    end
+  end
+
+  # Clear popular categories cache (useful when data changes significantly)
+  def self.refresh_popular_categories_cache
+    Rails.cache.delete("popular_categories")
+  end
+
   private
 
   def calculate_total_time

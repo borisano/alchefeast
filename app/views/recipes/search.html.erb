@@ -88,19 +88,28 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="mb-0">
             <i class="bi bi-grid-3x3-gap me-2"></i>
-            <%= @recipes.length %> Recipe<%= 's' if @recipes.length != 1 %> Found
+            <%= @recipes.total_count %> Recipe<%= 's' if @recipes.total_count != 1 %> Found
           </h4>
 
-          <% if @recipes.any? %>
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-outline-secondary btn-sm active">
-                <i class="bi bi-grid-3x3-gap"></i> Grid
-              </button>
-              <button type="button" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-list"></i> List
-              </button>
-            </div>
-          <% end %>
+          <div class="d-flex align-items-center gap-3">
+            <% if @recipes.respond_to?(:current_page) && @recipes.total_count > 0 %>
+              <small class="text-muted">
+                Showing <%= @recipes.offset_value + 1 %>-<%= [@recipes.offset_value + @recipes.limit_value, @recipes.total_count].min %> 
+                of <%= @recipes.total_count %> recipes
+              </small>
+            <% end %>
+            
+            <% if @recipes.any? %>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-sm active">
+                  <i class="bi bi-grid-3x3-gap"></i> Grid
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-list"></i> List
+                </button>
+              </div>
+            <% end %>
+          </div>
         </div>
 
         <% if @recipes.any? %>
@@ -111,6 +120,16 @@
               </div>
             <% end %>
           </div>
+          
+          <!-- Pagination -->
+          <% if @recipes.respond_to?(:current_page) %>
+            <div class="row">
+              <div class="col-12 d-flex justify-content-center mt-4">
+                <%= paginate @recipes, window: 2, 
+                    params: { q: @query, ingredients: @ingredients&.join(','), search_type: @search_type }.compact %>
+              </div>
+            </div>
+          <% end %>
         <% else %>
           <!-- No Results -->
           <div class="text-center py-5">

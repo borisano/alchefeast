@@ -2,24 +2,99 @@ require 'rails_helper'
 
 RSpec.describe RecipesController, type: :controller do
   describe "GET #index" do
-    it "returns a success response" do
-      get :index
-      expect(response).to be_successful
+    context 'basic functionality' do
+      it "returns a success response" do
+        get :index
+        expect(response).to be_successful
+      end
+
+      it "responds with HTML content" do
+        get :index
+        expect(response.content_type).to include("text/html")
+      end
+
+      it "handles category parameter" do
+        get :index, params: { category: "Italian" }
+        expect(response).to be_successful
+      end
+
+      it "handles difficulty parameter" do
+        get :index, params: { difficulty: "Easy" }
+        expect(response).to be_successful
+      end
     end
 
-    it "responds with HTML content" do
-      get :index
-      expect(response.content_type).to include("text/html")
+    context 'pagination' do
+      let!(:recipes) { create_list(:recipe, 25) }
+
+      it 'paginates results with 12 recipes per page' do
+        get :index
+        expect(assigns(:recipes).current_page).to eq(1)
+        expect(assigns(:recipes).limit_value).to eq(12)
+        expect(assigns(:recipes).count).to eq(12)
+      end
+
+      it 'responds to page parameter' do
+        get :index, params: { page: 2 }
+        expect(assigns(:recipes).current_page).to eq(2)
+        expect(assigns(:recipes).count).to eq(12)
+      end
+
+      it 'handles last page correctly' do
+        get :index, params: { page: 3 }
+        expect(assigns(:recipes).current_page).to eq(3)
+        expect(assigns(:recipes).count).to eq(1) # 25 total - 24 on first 2 pages = 1 remaining
+      end
+
+      it 'includes pagination metadata' do
+        get :index
+        recipes = assigns(:recipes)
+        expect(recipes).to respond_to(:current_page)
+        expect(recipes).to respond_to(:total_pages)
+        expect(recipes).to respond_to(:total_count)
+        expect(recipes).to respond_to(:offset_value)
+        expect(recipes).to respond_to(:limit_value)
+      end
+
+      context 'with category filter' do
+        let!(:italian_recipes) { create_list(:recipe, 15, category: 'Italian') }
+        let!(:other_recipes) { create_list(:recipe, 10, category: 'Mexican') }
+
+        it 'paginates filtered results' do
+          get :index, params: { category: 'Italian' }
+          recipes = assigns(:recipes)
+          expect(recipes.total_count).to eq(15)
+          expect(recipes.count).to eq(12) # First page of Italian recipes
+        end
+
+        it 'maintains category filter across pages' do
+          get :index, params: { category: 'Italian', page: 2 }
+          recipes = assigns(:recipes)
+          expect(recipes.current_page).to eq(2)
+          expect(recipes.count).to eq(3) # Remaining Italian recipes
+          # Verify all returned recipes are Italian
+          expect(recipes.pluck(:category).uniq).to eq([ 'Italian' ])
+        end
+      end
     end
 
-    it "handles category parameter" do
-      get :index, params: { category: "Italian" }
-      expect(response).to be_successful
-    end
+    context 'popular categories' do
+      let!(:everyday_recipes) { create_list(:recipe, 5, category: 'Everyday Cooking') }
+      let!(:bread_recipes) { create_list(:recipe, 3, category: 'Yeast Bread') }
+      let!(:mexican_recipes) { create_list(:recipe, 4, category: 'Mexican Recipes') }
 
-    it "handles difficulty parameter" do
-      get :index, params: { difficulty: "Easy" }
-      expect(response).to be_successful
+      it 'assigns popular categories' do
+        get :index
+        expect(assigns(:popular_categories)).to be_present
+        expect(assigns(:popular_categories)).to be_an(Array)
+      end
+
+      it 'falls back to hardcoded categories when empty' do
+        allow(Recipe).to receive(:popular_categories).and_return([])
+        get :index
+        expected_fallback = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ]
+        expect(assigns(:popular_categories)).to eq(expected_fallback)
+      end
     end
   end
 
@@ -240,9 +315,35 @@ RSpec.describe RecipesController, type: :controller do
     context 'result limiting' do
       let!(:many_recipes) { create_list(:recipe, 25, title: 'Test Recipe') }
 
-      it 'limits results to 20 recipes' do
+      it 'paginates results with 12 recipes per page' do
         get :search, params: { q: 'Test' }
-        expect(assigns(:recipes).count).to eq(20)
+        recipes = assigns(:recipes)
+        expect(recipes.current_page).to eq(1)
+        expect(recipes.limit_value).to eq(12)
+        expect(recipes.count).to eq(12)
+        expect(recipes.total_count).to eq(25)
+      end
+
+      it 'responds to page parameter' do
+        get :search, params: { q: 'Test', page: 2 }
+        recipes = assigns(:recipes)
+        expect(recipes.current_page).to eq(2)
+        expect(recipes.count).to eq(12)
+      end
+
+      it 'handles last page correctly' do
+        get :search, params: { q: 'Test', page: 3 }
+        recipes = assigns(:recipes)
+        expect(recipes.current_page).to eq(3)
+        expect(recipes.count).to eq(1) # 25 total - 24 on first 2 pages = 1 remaining
+      end
+
+      it 'maintains search parameters across pages' do
+        get :search, params: { q: 'Test', ingredients: 'flour', search_type: 'any', page: 2 }
+        expect(assigns(:query)).to eq('Test')
+        expect(assigns(:ingredients)).to include('flour')
+        expect(assigns(:search_type)).to eq('any')
+        expect(assigns(:recipes).current_page).to eq(2)
       end
     end
   end
