@@ -32,7 +32,7 @@ RSpec.describe 'Recipe Search', type: :feature do
       visit root_path
 
       within('nav') do
-        fill_in 'q', with: 'Chocolate'
+        fill_in 'search_input', with: 'Chocolate'
         click_button class: 'btn-outline-light'
       end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Recipe Search', type: :feature do
       visit root_path
 
       within('nav') do
-        fill_in 'q', with: 'chocolate chips'
+        fill_in 'search_input', with: 'chocolate chips'
         click_button class: 'btn-outline-light'
       end
 

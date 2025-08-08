@@ -38,12 +38,14 @@ FactoryBot.define do
           Ingredient.find_or_create_by(name: "ingredient_for_recipe_#{recipe.id}_#{i}")
         end
         ingredients.each_with_index do |ingredient, index|
+          quantity = rand(1..5)
+          unit = [ "cups", "tablespoons", "teaspoons", "pounds" ].sample
           create(:recipe_ingredient,
                  recipe: recipe,
                  ingredient: ingredient,
-                 quantity: rand(1..5),
-                 unit: [ "cups", "tablespoons", "teaspoons", "pounds" ].sample,
-                 raw_text: "#{rand(1..5)} #{[ "cups", "tablespoons", "teaspoons", "pounds" ].sample} #{ingredient.name}")
+                 quantity: quantity,
+                 unit: unit,
+                 raw_text: "#{quantity} #{unit} #{ingredient.name}")
         end
       end
     end

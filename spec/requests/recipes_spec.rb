@@ -60,5 +60,43 @@ RSpec.describe "Recipes", type: :request do
       expect(response.body).to include("eggs")
       expect(response.body).to include("cheese")
     end
+
+    it "handles navbar search input with comma-separated ingredients" do
+      get "/recipes/search", params: { search_input: "eggs,cheese,milk" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("eggs")
+      expect(response.body).to include("cheese")
+      expect(response.body).to include("milk")
+    end
+
+    it "handles navbar search input with single recipe name" do
+      get "/recipes/search", params: { search_input: "pasta" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("pasta")
+    end
+
+    it "treats comma-separated search_input as ingredient search" do
+      # Create test data
+      recipe = create(:recipe, title: 'Test Recipe')
+      ingredient1 = create(:ingredient, name: 'eggs')
+      ingredient2 = create(:ingredient, name: 'cheese')
+      create(:recipe_ingredient, recipe: recipe, ingredient: ingredient1)
+      create(:recipe_ingredient, recipe: recipe, ingredient: ingredient2)
+
+      get "/recipes/search", params: { search_input: "eggs,cheese" }
+      expect(response).to have_http_status(:success)
+
+      # Should show ingredient badges for matching ingredients
+      expect(response.body).to include("Matching Ingredients")
+    end
+
+    it "treats single search_input as recipe name search" do
+      recipe = create(:recipe, title: 'Delicious Pasta Recipe')
+
+      get "/recipes/search", params: { search_input: "pasta" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("pasta")
+      expect(response.body).to include(recipe.title)
+    end
   end
 end

@@ -23,6 +23,18 @@ class RecipesController < ApplicationController
   end
 
   def search
+    # Handle navbar search input (could be recipe name or comma-separated ingredients)
+    if params[:search_input].present?
+      search_input = params[:search_input].strip
+      if search_input.include?(',')
+        # Treat as ingredient search
+        params[:ingredients] = search_input
+      else
+        # Treat as recipe name search
+        params[:q] = search_input
+      end
+    end
+
     @query = params[:q]
     @ingredients = params[:ingredients]&.split(",")&.map(&:strip)&.reject(&:blank?) || []
     @search_type = params[:search_type] || "all" # "all" or "any"
