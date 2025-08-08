@@ -8,6 +8,29 @@ class RecipesController < ApplicationController
       @recipes = @recipes.where(category: params[:category])
     end
 
+    # Handle search parameters
+    if params[:q].present?
+      # Search in both recipe titles and ingredients
+      @recipes = @recipes.left_joins(:ingredients)
+                        .where("title LIKE ? OR LOWER(ingredients.name) LIKE ?",
+                               "%#{params[:q]}%", "%#{params[:q].downcase}%")
+                        .distinct
+    end
+
+    # Handle ingredient search
+    if params[:ingredients].present?
+      ingredient_names = params[:ingredients].split(",").map(&:strip).reject(&:blank?).map(&:downcase)
+      search_type = params[:search_type] || "all"
+
+      if search_type == "all"
+        # Find recipes that contain ALL of the specified ingredients
+        @recipes = @recipes.with_ingredients(ingredient_names)
+      else
+        # Find recipes that contain ANY of the specified ingredients
+        @recipes = @recipes.with_any_ingredients(ingredient_names)
+      end
+    end
+
     # Add pagination
     @recipes = @recipes.page(params[:page]).per(12)
 
@@ -16,6 +39,11 @@ class RecipesController < ApplicationController
 
     # Fallback to hardcoded categories if cache returns empty
     @popular_categories = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ] if @popular_categories.empty?
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 
   def show
