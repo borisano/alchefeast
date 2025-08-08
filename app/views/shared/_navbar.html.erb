@@ -18,10 +18,13 @@
         <li class="nav-item">
           <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
         </li>
+        <li class="nav-item">
+          <%= link_to "Search", search_recipes_path, class: "nav-link" %>
+        </li>
       </ul>
       
       <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
-        <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
+        <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search" style="min-width: 200px;">
         <button class="btn btn-outline-light" type="submit">
           <i class="bi bi-search"></i>
         </button>

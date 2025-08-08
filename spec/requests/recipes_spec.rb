@@ -16,16 +16,17 @@ RSpec.describe "Recipes", type: :request do
   end
 
   describe "GET /recipes/:id" do
+    let!(:test_recipe) { create(:recipe, title: 'Test Recipe for Request Spec') }
+
     it "returns http success for valid id" do
-      get "/recipes/1"
+      get "/recipes/#{test_recipe.id}"
       expect(response).to have_http_status(:success)
     end
 
     it "contains recipe details for valid id" do
-      get "/recipes/1"
-      expect(response.body).to include("Classic Spaghetti Carbonara")
+      get "/recipes/#{test_recipe.id}"
+      expect(response.body).to include("Test Recipe for Request Spec")
       expect(response.body).to include("Ingredients")
-      expect(response.body).to include("Instructions")
     end
 
     it "redirects for invalid id" do

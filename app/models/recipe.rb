@@ -15,16 +15,20 @@ class Recipe < ApplicationRecord
 
   # Find recipes containing specific ingredients
   scope :with_ingredients, ->(ingredient_names) {
+    return none if ingredient_names.blank?
+
     joins(:ingredients)
-      .where(ingredients: { name: ingredient_names })
+      .where("LOWER(ingredients.name) IN (?)", ingredient_names.map(&:downcase))
       .group("recipes.id")
       .having("COUNT(DISTINCT ingredients.id) = ?", ingredient_names.length)
   }
 
   # Find recipes containing any of the specified ingredients (for partial matching)
   scope :with_any_ingredients, ->(ingredient_names) {
+    return none if ingredient_names.blank?
+
     joins(:ingredients)
-      .where(ingredients: { name: ingredient_names })
+      .where("LOWER(ingredients.name) IN (?)", ingredient_names.map(&:downcase))
       .distinct
   }
 

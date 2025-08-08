@@ -7,7 +7,6 @@ FactoryBot.define do
     cuisine { [ "Italian", "American", "Asian", "French", "Mexican" ].sample }
     category { [ "Main Course", "Dessert", "Appetizer", "Side Dish", "Breakfast" ].sample }
     sequence(:author) { |n| "Chef #{n}" }
-    image_url { "https://example.com/recipe_#{id}.jpg" }
 
     trait :quick do
       cook_time { rand(5..15) }

@@ -9,17 +9,21 @@
         <h1 class="display-6 fw-bold text-primary">
           <i class="bi bi-search me-2"></i>Search Results
         </h1>
-        
+
         <div class="mb-3">
           <% if @query.present? %>
             <p class="lead">
               Showing results for: <strong>"<%= @query %>"</strong>
             </p>
           <% end %>
-          
+
           <% if @ingredients.present? %>
             <p class="lead">
-              Recipes using ingredients: 
+              <% if @search_type == "all" %>
+                Recipes that contain <strong>ALL</strong> of these ingredients:
+              <% else %>
+                Recipes that contain <strong>ANY</strong> of these ingredients:
+              <% end %>
               <% @ingredients.each_with_index do |ingredient, index| %>
                 <span class="badge bg-success me-1"><%= ingredient %></span><%= ',' if index < @ingredients.length - 1 %>
               <% end %>
@@ -37,24 +41,37 @@
             <h5 class="card-title mb-3">
               <i class="bi bi-funnel me-2"></i>Refine Your Search
             </h5>
-            
+
             <form action="<%= search_recipes_path %>" method="get">
               <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="search_query" class="form-label">Recipe Name or Description</label>
-                  <input type="text" class="form-control" id="search_query" name="q" 
+                <div class="col-md-4 mb-3">
+                  <label for="search_query" class="form-label">Recipe Name</label>
+                  <input type="text" class="form-control" id="search_query" name="q"
                          value="<%= @query %>" placeholder="e.g., pasta, chicken curry">
                 </div>
-                
-                <div class="col-md-6 mb-3">
-                  <label for="search_ingredients" class="form-label">Available Ingredients</label>
-                  <input type="text" class="form-control" id="search_ingredients" name="ingredients" 
-                         value="<%= @ingredients.join(', ') if @ingredients.present? %>" 
+
+                <div class="col-md-4 mb-3">
+                  <label for="search_ingredients" class="form-label">Ingredients</label>
+                  <input type="text" class="form-control" id="search_ingredients" name="ingredients"
+                         value="<%= @ingredients.join(', ') if @ingredients.present? %>"
                          placeholder="e.g., chicken, tomatoes, onions">
                   <div class="form-text">Separate multiple ingredients with commas</div>
                 </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="search_type" class="form-label">Search Type</label>
+                  <select class="form-select" id="search_type" name="search_type">
+                    <option value="all" <%= 'selected' if @search_type == 'all' %>>
+                      Must have ALL ingredients
+                    </option>
+                    <option value="any" <%= 'selected' if @search_type == 'any' %>>
+                      Can have ANY ingredients
+                    </option>
+                  </select>
+                  <div class="form-text">How to match ingredients</div>
+                </div>
               </div>
-              
+
               <button type="submit" class="btn btn-primary">
                 <i class="bi bi-search me-2"></i>Search Recipes
               </button>
@@ -73,7 +90,7 @@
             <i class="bi bi-grid-3x3-gap me-2"></i>
             <%= @recipes.length %> Recipe<%= 's' if @recipes.length != 1 %> Found
           </h4>
-          
+
           <% if @recipes.any? %>
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-outline-secondary btn-sm active">
@@ -85,16 +102,16 @@
             </div>
           <% end %>
         </div>
-        
+
         <% if @recipes.any? %>
           <div class="row">
             <% @recipes.each do |recipe| %>
               <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
                 <div class="card h-100 shadow-sm recipe-card">
                   <div class="position-relative">
-                    <img src="<%= recipe.image_url %>" class="card-img-top" alt="<%= recipe.title %>" 
+                    <img src="<%= recipe.image_url %>" class="card-img-top" alt="<%= recipe.title %>"
                          style="height: 200px; object-fit: cover;">
-                    
+
                     <!-- Category Badge -->
                     <% if recipe.category.present? %>
                       <span class="position-absolute top-0 start-0 m-2 badge bg-primary">
@@ -102,11 +119,11 @@
                       </span>
                     <% end %>
                   </div>
-                  
+
                   <div class="card-body d-flex flex-column">
                     <h5 class="card-title mb-2"><%= recipe.title %></h5>
                     <p class="card-text text-muted small flex-grow-1">Delicious recipe to try!</p>
-                    
+
                     <!-- Matching Ingredients -->
                     <% if @ingredients.present? && recipe.ingredients.any? %>
                       <% matching_ingredients = recipe.ingredients.select { |ing| @ingredients.map(&:downcase).include?(ing.name.downcase) } %>
@@ -123,7 +140,7 @@
                         </div>
                       <% end %>
                     <% end %>
-                    
+
                     <!-- Recipe Stats -->
                     <div class="row g-1 mb-3 small">
                       <% if recipe.total_time.present? %>
@@ -140,7 +157,7 @@
                         <i class="bi bi-heart text-danger me-1"></i>Popular
                       </div>
                     </div>
-                    
+
                     <div class="mt-auto">
                       <%= link_to "View Recipe", recipe_path(recipe.id), class: "btn btn-primary w-100" %>
                     </div>
@@ -157,15 +174,15 @@
             </div>
             <h3 class="text-muted mb-3">No recipes found</h3>
             <p class="text-muted mb-4">
-              We couldn't find any recipes matching your search criteria. 
+              We couldn't find any recipes matching your search criteria.
               <br>Try adjusting your search terms or browse all recipes.
             </p>
-            
+
             <div class="d-flex justify-content-center gap-3">
               <%= link_to "Browse All Recipes", recipes_path, class: "btn btn-primary" %>
               <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary" %>
             </div>
-            
+
             <!-- Search Suggestions -->
             <div class="mt-4">
               <h5 class="text-muted">Search Suggestions:</h5>

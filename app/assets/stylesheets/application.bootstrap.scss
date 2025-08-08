@@ -6,6 +6,16 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+// Logo styles
+.navbar-brand img {
+  filter: brightness(1.2);
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
 .hero-section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }

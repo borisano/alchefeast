@@ -88,51 +88,123 @@ RSpec.describe Recipe, type: :model do
       let!(:flour) { create(:ingredient, name: 'flour') }
       let!(:sugar) { create(:ingredient, name: 'sugar') }
       let!(:eggs) { create(:ingredient, name: 'eggs') }
+      let!(:vanilla) { create(:ingredient, name: 'vanilla extract') }
+
       let!(:recipe_with_flour_sugar) do
-        recipe = create(:recipe)
+        recipe = create(:recipe, title: 'Cookies')
         create(:recipe_ingredient, recipe: recipe, ingredient: flour)
         create(:recipe_ingredient, recipe: recipe, ingredient: sugar)
         recipe
       end
+
       let!(:recipe_with_all_three) do
-        recipe = create(:recipe)
+        recipe = create(:recipe, title: 'Cake')
         create(:recipe_ingredient, recipe: recipe, ingredient: flour)
         create(:recipe_ingredient, recipe: recipe, ingredient: sugar)
         create(:recipe_ingredient, recipe: recipe, ingredient: eggs)
         recipe
       end
 
+      let!(:recipe_with_only_flour) do
+        recipe = create(:recipe, title: 'Bread')
+        create(:recipe_ingredient, recipe: recipe, ingredient: flour)
+        recipe
+      end
+
       it 'finds recipes with all specified ingredients' do
         results = Recipe.with_ingredients([ 'flour', 'sugar' ])
         expect(results).to include(recipe_with_flour_sugar, recipe_with_all_three)
+        expect(results).not_to include(recipe_with_only_flour)
       end
 
       it 'does not include recipes missing any ingredient' do
         results = Recipe.with_ingredients([ 'flour', 'sugar', 'eggs' ])
         expect(results).to include(recipe_with_all_three)
-        expect(results).not_to include(recipe_with_flour_sugar)
+        expect(results).not_to include(recipe_with_flour_sugar, recipe_with_only_flour)
+      end
+
+      it 'handles case-insensitive matching' do
+        results = Recipe.with_ingredients([ 'FLOUR', 'SUGAR' ])
+        expect(results).to include(recipe_with_flour_sugar, recipe_with_all_three)
+      end
+
+      it 'handles single ingredient search' do
+        results = Recipe.with_ingredients([ 'flour' ])
+        expect(results).to include(recipe_with_flour_sugar, recipe_with_all_three, recipe_with_only_flour)
+      end
+
+      it 'returns empty for non-existent ingredients' do
+        results = Recipe.with_ingredients([ 'non-existent-ingredient' ])
+        expect(results).to be_empty
+      end
+
+      it 'returns none for blank input' do
+        expect(Recipe.with_ingredients([])).to eq(Recipe.none)
+        expect(Recipe.with_ingredients(nil)).to eq(Recipe.none)
       end
     end
 
     describe '.with_any_ingredients' do
       let!(:flour) { create(:ingredient, name: 'flour') }
       let!(:sugar) { create(:ingredient, name: 'sugar') }
+      let!(:chocolate) { create(:ingredient, name: 'chocolate chips') }
+
       let!(:recipe_with_flour) do
-        recipe = create(:recipe)
+        recipe = create(:recipe, title: 'Bread')
         create(:recipe_ingredient, recipe: recipe, ingredient: flour)
         recipe
       end
+
       let!(:recipe_with_sugar) do
-        recipe = create(:recipe)
+        recipe = create(:recipe, title: 'Candy')
         create(:recipe_ingredient, recipe: recipe, ingredient: sugar)
         recipe
       end
-      let!(:recipe_without_either) { create(:recipe) }
+
+      let!(:recipe_with_chocolate) do
+        recipe = create(:recipe, title: 'Cookies')
+        create(:recipe_ingredient, recipe: recipe, ingredient: chocolate)
+        recipe
+      end
+
+      let!(:recipe_without_any) do
+        vanilla = create(:ingredient, name: 'vanilla')
+        recipe = create(:recipe, title: 'Pudding')
+        create(:recipe_ingredient, recipe: recipe, ingredient: vanilla)
+        recipe
+      end
 
       it 'finds recipes with any of the specified ingredients' do
         results = Recipe.with_any_ingredients([ 'flour', 'sugar' ])
         expect(results).to include(recipe_with_flour, recipe_with_sugar)
-        expect(results).not_to include(recipe_without_either)
+        expect(results).not_to include(recipe_with_chocolate, recipe_without_any)
+      end
+
+      it 'finds all recipes when they each have different specified ingredients' do
+        results = Recipe.with_any_ingredients([ 'flour', 'sugar', 'chocolate chips' ])
+        expect(results).to include(recipe_with_flour, recipe_with_sugar, recipe_with_chocolate)
+        expect(results).not_to include(recipe_without_any)
+      end
+
+      it 'handles case-insensitive matching' do
+        results = Recipe.with_any_ingredients([ 'FLOUR' ])
+        expect(results).to include(recipe_with_flour)
+      end
+
+      it 'returns empty for non-existent ingredients' do
+        results = Recipe.with_any_ingredients([ 'non-existent-ingredient' ])
+        expect(results).to be_empty
+      end
+
+      it 'returns none for blank input' do
+        expect(Recipe.with_any_ingredients([])).to eq(Recipe.none)
+        expect(Recipe.with_any_ingredients(nil)).to eq(Recipe.none)
+      end
+
+      it 'handles single ingredient search' do
+        results = Recipe.with_any_ingredients([ 'flour' ])
+        expect(results).to include(recipe_with_flour)
+        expect(results).not_to include(recipe_with_sugar, recipe_with_chocolate)
       end
     end
   end
