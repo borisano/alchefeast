@@ -1,34 +1,6 @@
 <% content_for :title, "Alchefeast - Find Recipes with Your Ingredients" %>
 
 <div class="container-fluid">
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-    <div class="container">
-      <%= link_to "Alchefeast", root_path, class: "navbar-brand fw-bold" %>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <%= link_to "Home", root_path, class: "nav-link active" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
-          </li>
-        </ul>
-        
-        <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
-          <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
-          <button class="btn btn-outline-light" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-  </nav>
 
   <!-- Hero Section -->
   <div class="hero-section bg-light py-5 mb-5">
@@ -173,19 +145,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-light py-4 mt-5">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <h5>Alchefeast</h5>
-          <p class="mb-0">Making cooking easier, one ingredient at a time.</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <p class="mb-0">&copy; 2025 Alchefeast. All rights reserved.</p>
-        </div>
-      </div>
-    </div>
-  </footer>
 </div>

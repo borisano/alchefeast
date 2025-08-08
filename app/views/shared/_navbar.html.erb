@@ -1,0 +1,28 @@
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container">
+    <%= link_to "Alchefeast", root_path, class: "navbar-brand fw-bold" %>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <%= link_to "Home", root_path, class: "nav-link" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
+        </li>
+      </ul>
+      
+      <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get">
+        <input class="form-control me-2" type="search" name="q" placeholder="Search recipes..." aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
