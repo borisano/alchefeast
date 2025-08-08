@@ -28,6 +28,34 @@ class Recipe < ApplicationRecord
       .distinct
   }
 
+  # Get a random food image from Foodish API
+  def image_url
+    # Use recipe ID to ensure consistent image for same recipe
+    # This creates a pseudo-random but deterministic image selection
+    food_categories = [ "biryani", "burger", "butter-chicken", "dessert", "dosa", "idly", "pasta", "pizza", "rice", "samosa" ]
+    category_index = id % food_categories.length
+    selected_category = food_categories[category_index]
+
+    begin
+      # Try to fetch from Foodish API
+      require "net/http"
+      require "json"
+
+      uri = URI("https://foodish-api.com/api/images/#{selected_category}")
+      response = Net::HTTP.get_response(uri)
+
+      if response.code == "200"
+        data = JSON.parse(response.body)
+        return data["image"]
+      end
+    rescue => e
+      Rails.logger.warn "Failed to fetch image from Foodish API: #{e.message}"
+    end
+
+    # Fallback to a placeholder image if API fails
+    "https://via.placeholder.com/400x300/007bff/ffffff?text=#{title.gsub(' ', '+')}"
+  end
+
   private
 
   def calculate_total_time
