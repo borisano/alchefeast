@@ -1,4 +1,4 @@
-## User Stories
+~## User Stories
 
 ### 1. As a home cook, I want to search for recipes using ingredients I have at home, so that I can decide what to cook without making a grocery trip.
 
