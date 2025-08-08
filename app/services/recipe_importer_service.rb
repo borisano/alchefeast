@@ -3,7 +3,7 @@ require "set"
 class RecipeImporterService
   attr_reader :results, :errors
 
-  def initialize
+  def initialize(progress_callback: nil, batch_size: 100)
     @results = {
       created_recipes: 0,
       created_ingredients: 0,
@@ -11,6 +11,11 @@ class RecipeImporterService
       errors: []
     }
     @errors = []
+    @progress_callback = progress_callback
+    @batch_size = batch_size
+    @processed_count = 0
+    @total_count = 0
+    @start_time = nil
   end
 
   def import_from_file(file_path)
@@ -18,6 +23,11 @@ class RecipeImporterService
 
     begin
       json_data = JSON.parse(File.read(file_path))
+      @total_count = json_data.length
+      @start_time = Time.current
+
+      log_progress("Starting import of #{@total_count} recipes...")
+
       import_recipes(json_data)
     rescue JSON::ParserError => e
       @errors << "Invalid JSON format: #{e.message}"
@@ -34,10 +44,22 @@ class RecipeImporterService
     recipes_data.each_with_index do |recipe_data, index|
       begin
         import_single_recipe(recipe_data)
+        @processed_count += 1
+
+        # Log progress every batch_size recipes or at the end
+        if @processed_count % @batch_size == 0 || @processed_count == @total_count
+          log_progress("Processed #{@processed_count}/#{@total_count} recipes (#{progress_percentage}%)")
+
+          # Optionally trigger garbage collection every batch to manage memory
+          GC.start if @processed_count % (@batch_size * 5) == 0
+        end
       rescue => e
         @errors << "Error importing recipe at index #{index}: #{e.message}"
+        @processed_count += 1
       end
     end
+
+    log_progress("Import completed! Final stats: #{@results[:created_recipes]} created, #{@results[:updated_recipes]} updated, #{@results[:created_ingredients]} ingredients created")
   end
 
   private
@@ -242,5 +264,65 @@ class RecipeImporterService
   def normalize_string(str)
     return nil if str.blank?
     str.strip.empty? ? nil : str.strip
+  end
+
+  # Progress tracking methods
+  def progress_percentage
+    return 0 if @total_count == 0
+    ((@processed_count.to_f / @total_count) * 100).round(2)
+  end
+
+  def estimated_time_remaining
+    return "Unknown" if @processed_count == 0 || @start_time.nil?
+
+    elapsed_time = Time.current - @start_time
+    rate = @processed_count.to_f / elapsed_time
+    remaining_items = @total_count - @processed_count
+
+    if rate > 0
+      remaining_seconds = remaining_items / rate
+      format_duration(remaining_seconds)
+    else
+      "Unknown"
+    end
+  end
+
+  def log_progress(message)
+    timestamp = Time.current.strftime("%H:%M:%S")
+    eta = estimated_time_remaining
+    memory_usage = `ps -o pid,vsz,rss,comm -p #{Process.pid}`.split("\n").last.split[1..2].join(" ") rescue "Unknown"
+
+    full_message = "[#{timestamp}] #{message}"
+    full_message += " | ETA: #{eta}" if eta != "Unknown" && @processed_count > 0 && @processed_count < @total_count
+    full_message += " | Memory: #{memory_usage}" if memory_usage != "Unknown"
+
+    puts full_message
+
+    # Call the progress callback if provided (useful for background jobs)
+    if @progress_callback
+      @progress_callback.call({
+        processed: @processed_count,
+        total: @total_count,
+        percentage: progress_percentage,
+        eta: eta,
+        message: message
+      })
+    end
+  end
+
+  def format_duration(seconds)
+    return "0s" if seconds <= 0
+
+    hours = seconds / 3600
+    minutes = (seconds % 3600) / 60
+    secs = seconds % 60
+
+    if hours >= 1
+      "#{hours.to_i}h #{minutes.to_i}m"
+    elsif minutes >= 1
+      "#{minutes.to_i}m #{secs.to_i}s"
+    else
+      "#{secs.to_i}s"
+    end
   end
 end
