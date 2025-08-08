@@ -4,8 +4,8 @@ FactoryBot.define do
     cook_time { rand(10..60) }
     prep_time { rand(5..30) }
     ratings { rand(3.0..5.0).round(2) }
-    cuisine { ["Italian", "American", "Asian", "French", "Mexican"].sample }
-    category { ["Main Course", "Dessert", "Appetizer", "Side Dish", "Breakfast"].sample }
+    cuisine { [ "Italian", "American", "Asian", "French", "Mexican" ].sample }
+    category { [ "Main Course", "Dessert", "Appetizer", "Side Dish", "Breakfast" ].sample }
     sequence(:author) { |n| "Chef #{n}" }
     image_url { "https://example.com/recipe_#{id}.jpg" }
 
@@ -43,8 +43,8 @@ FactoryBot.define do
                  recipe: recipe,
                  ingredient: ingredient,
                  quantity: rand(1..5),
-                 unit: ["cups", "tablespoons", "teaspoons", "pounds"].sample,
-                 raw_text: "#{rand(1..5)} #{["cups", "tablespoons", "teaspoons", "pounds"].sample} #{ingredient.name}")
+                 unit: [ "cups", "tablespoons", "teaspoons", "pounds" ].sample,
+                 raw_text: "#{rand(1..5)} #{[ "cups", "tablespoons", "teaspoons", "pounds" ].sample} #{ingredient.name}")
         end
       end
     end
