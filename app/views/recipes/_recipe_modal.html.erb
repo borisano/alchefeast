@@ -1,15 +1,16 @@
 <%# Recipe Detail Modal/Drawer %>
-<%= turbo_frame_tag "recipe_modal", data: { controller: "recipe-modal" } do %>
-  <!-- Modal Backdrop -->
-  <div class="modal-backdrop fade show" 
-       data-recipe-modal-target="backdrop"
-       data-action="click->recipe-modal#close"
-       style="z-index: 1050; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
-       
-  <div class="modal-drawer show" 
-       tabindex="-1" 
-       data-recipe-modal-target="modal"
-       style="position: fixed; top: 0; right: 0; width: 50%; min-width: 600px; height: 100vh; background: white; z-index: 1055; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3); transform: translateX(0); transition: transform 0.3s ease;">
+<%= turbo_frame_tag "recipe_modal" do %>
+  <div data-controller="recipe-modal">
+    <!-- Modal Backdrop -->
+    <div class="modal-backdrop fade show" 
+         data-recipe-modal-target="backdrop"
+         data-action="click->recipe-modal#close"
+         style="z-index: 1050; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
+         
+    <div class="modal-drawer show" 
+         tabindex="-1" 
+         data-recipe-modal-target="modal"
+         style="position: fixed; top: 0; right: 0; width: 50%; min-width: 600px; height: 100vh; background: white; z-index: 1055; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3); transform: translateX(0); transition: transform 1s ease;">
     <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
       <h5 class="modal-title fw-bold text-primary mb-0">
         <i class="bi bi-book me-2"></i><%= @recipe.title %>
@@ -228,5 +229,6 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 <% end %>

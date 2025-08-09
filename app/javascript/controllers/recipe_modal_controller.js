@@ -4,31 +4,24 @@ export default class extends Controller {
   static targets = ["modal", "backdrop"]
 
   connect() {
-    console.log("Recipe modal controller connected!")
+    // Prevent body scrolling when modal is open
+    document.body.style.overflow = 'hidden'
     
-    // Show the modal with animation
+    // Add ESC key listener
+    this.boundHandleKeydown = this.handleKeydown.bind(this)
+    document.addEventListener('keydown', this.boundHandleKeydown)
+    
+    // Add smooth slide-in animation
     if (this.hasModalTarget) {
-      // Prevent body scrolling when modal is open
-      document.body.style.overflow = 'hidden'
-      
-      // Add animation class
       this.modalTarget.style.transform = 'translateX(100%)'
       requestAnimationFrame(() => {
         this.modalTarget.style.transform = 'translateX(0)'
       })
-
-      // Handle ESC key
-      this.boundHandleKeydown = this.handleKeydown.bind(this)
-      document.addEventListener('keydown', this.boundHandleKeydown)
-      
-      console.log("Modal initialized successfully")
     }
   }
 
   disconnect() {
-    console.log("Recipe modal controller disconnected")
-    
-    // Remove event listener and restore scrolling
+    // Remove ESC key listener and restore scrolling
     if (this.boundHandleKeydown) {
       document.removeEventListener('keydown', this.boundHandleKeydown)
     }
@@ -36,41 +29,33 @@ export default class extends Controller {
   }
 
   handleKeydown(event) {
-    // Close modal on ESC key
     if (event.key === 'Escape') {
-      console.log("ESC key pressed - closing modal")
       this.close(event)
     }
   }
 
   close(event) {
-    console.log("Close method called", event)
-    
     if (event) {
       event.preventDefault()
       event.stopPropagation()
     }
     
-    // Animate modal out
+    // Animate slide-out if modal target exists
     if (this.hasModalTarget) {
       this.modalTarget.style.transform = 'translateX(100%)'
       
-      // Clear modal content after animation
+      // Clear content after 1-second animation completes
       setTimeout(() => {
         this.clearModal()
-      }, 300)
+      }, 1000)
     } else {
       this.clearModal()
     }
   }
 
   clearModal() {
-    console.log("Clearing modal content")
-    
-    // Clear the modal content when closed
+    // Clear the modal content and restore body scrolling
     this.element.innerHTML = ""
-    
-    // Restore body scrolling
     document.body.style.overflow = ''
   }
 }

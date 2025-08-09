@@ -56,7 +56,7 @@ class RecipesController < ApplicationController
   def modal
     @recipe = Recipe.find(params[:id])
     @recipe_ingredients = @recipe.recipe_ingredients.includes(:ingredient)
-    
+
     respond_to do |format|
       format.html { render partial: "recipe_modal", layout: false }
       format.turbo_stream { render "modal" }

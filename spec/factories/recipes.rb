@@ -39,7 +39,7 @@ FactoryBot.define do
         end
         ingredients.each_with_index do |ingredient, index|
           quantity = index + 1  # 1, 2, 3
-          unit = ["cups", "tablespoons", "teaspoons"][index]  # Deterministic units
+          unit = [ "cups", "tablespoons", "teaspoons" ][index]  # Deterministic units
           create(:recipe_ingredient,
                  recipe: recipe,
                  ingredient: ingredient,
