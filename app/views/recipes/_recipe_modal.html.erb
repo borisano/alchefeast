@@ -1,14 +1,17 @@
 <%# Recipe Detail Modal/Drawer %>
 <%= turbo_frame_tag "recipe_modal", data: { controller: "recipe-modal" } do %>
-  <div class="offcanvas offcanvas-end show" 
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop fade show" 
+       data-recipe-modal-target="backdrop"
+       data-action="click->recipe-modal#close"
+       style="z-index: 1050; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
+       
+  <div class="modal-drawer show" 
        tabindex="-1" 
-       id="recipeModal" 
-       data-bs-backdrop="true" 
-       data-bs-keyboard="true" 
        data-recipe-modal-target="modal"
-       style="width: 50%; min-width: 600px;">
-    <div class="offcanvas-header border-bottom">
-      <h5 class="offcanvas-title fw-bold text-primary">
+       style="position: fixed; top: 0; right: 0; width: 50%; min-width: 600px; height: 100vh; background: white; z-index: 1055; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3); transform: translateX(0); transition: transform 0.3s ease;">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+      <h5 class="modal-title fw-bold text-primary mb-0">
         <i class="bi bi-book me-2"></i><%= @recipe.title %>
       </h5>
       <button type="button" 
@@ -17,7 +20,7 @@
               aria-label="Close"></button>
     </div>
     
-    <div class="offcanvas-body p-0">
+    <div class="modal-body p-0" style="height: calc(100vh - 80px); overflow-y: auto;">
       <div class="container-fluid p-4">
         <!-- Recipe Image -->
         <% if @recipe.image_url.present? %>
