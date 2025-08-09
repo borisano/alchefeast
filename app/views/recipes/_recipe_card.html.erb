@@ -65,7 +65,24 @@
     <% end %>
     
     <div class="mt-auto">
-      <%= link_to "View Recipe", recipe_path(recipe.id), class: "btn btn-primary w-100" %>
+      <div class="row g-1">
+        <div class="col-7">
+          <%= link_to modal_recipe_path(recipe), 
+              class: "btn btn-primary btn-sm w-100",
+              data: { 
+                turbo_frame: "recipe_modal"
+              } do %>
+            <i class="bi bi-eye me-1"></i>Quick View
+          <% end %>
+        </div>
+        <div class="col-5">
+          <%= link_to recipe_path(recipe), 
+              class: "btn btn-outline-primary btn-sm w-100",
+              data: { turbo_frame: "_top" } do %>
+            <i class="bi bi-arrow-right"></i>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -80,6 +80,11 @@
   </div>
 </div>
 
+<!-- Recipe Modal Frame -->
+<%= turbo_frame_tag "recipe_modal" do %>
+  <!-- Modal content will be loaded here -->
+<% end %>
+
 <style>
 .recipe-card {
   transition: transform 0.2s ease-in-out;

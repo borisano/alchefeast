@@ -1,25 +1,25 @@
 FactoryBot.define do
   factory :recipe do
     sequence(:title) { |n| "Recipe #{n}" }
-    cook_time { rand(10..60) }
-    prep_time { rand(5..30) }
-    ratings { rand(3.0..5.0).round(2) }
-    cuisine { [ "Italian", "American", "Asian", "French", "Mexican" ].sample }
-    category { [ "Main Course", "Dessert", "Appetizer", "Side Dish", "Breakfast" ].sample }
+    cook_time { 20 }
+    prep_time { 15 }
+    ratings { 4.2 }
+    cuisine { "Italian" }
+    category { "Main Course" }
     sequence(:author) { |n| "Chef #{n}" }
 
     trait :quick do
-      cook_time { rand(5..15) }
-      prep_time { rand(5..10) }
+      cook_time { 10 }
+      prep_time { 5 }
     end
 
     trait :slow_cook do
-      cook_time { rand(60..180) }
-      prep_time { rand(15..45) }
+      cook_time { 120 }
+      prep_time { 30 }
     end
 
     trait :highly_rated do
-      ratings { rand(4.5..5.0).round(2) }
+      ratings { 4.8 }
     end
 
     trait :italian do
@@ -38,8 +38,8 @@ FactoryBot.define do
           Ingredient.find_or_create_by(name: "ingredient_for_recipe_#{recipe.id}_#{i}")
         end
         ingredients.each_with_index do |ingredient, index|
-          quantity = rand(1..5)
-          unit = [ "cups", "tablespoons", "teaspoons", "pounds" ].sample
+          quantity = index + 1  # 1, 2, 3
+          unit = ["cups", "tablespoons", "teaspoons"][index]  # Deterministic units
           create(:recipe_ingredient,
                  recipe: recipe,
                  ingredient: ingredient,

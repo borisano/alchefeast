@@ -53,6 +53,23 @@ class RecipesController < ApplicationController
     redirect_to recipes_path, alert: "Recipe not found"
   end
 
+  def modal
+    @recipe = Recipe.find(params[:id])
+    @recipe_ingredients = @recipe.recipe_ingredients.includes(:ingredient)
+    
+    respond_to do |format|
+      format.html { render partial: "recipe_modal", layout: false }
+      format.turbo_stream { render "modal" }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to recipes_path, alert: "Recipe not found" }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("recipe_modal", "<div>Recipe not found</div>")
+      end
+    end
+  end
+
   def search
     # Handle navbar search input (could be recipe name or comma-separated ingredients)
     if params[:search_input].present?
