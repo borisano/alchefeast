@@ -36,49 +36,11 @@
     <!-- Search Form -->
     <div class="row mb-4">
       <div class="col-12">
-        <div class="card border-0 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title mb-3">
-              <i class="bi bi-funnel me-2"></i>Refine Your Search
-            </h5>
-
-            <form action="<%= search_recipes_path %>" method="get">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label for="search_query" class="form-label">Recipe Name</label>
-                  <input type="text" class="form-control" id="search_query" name="q"
-                         value="<%= @query %>" placeholder="e.g., pasta, chicken curry">
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="search_ingredients" class="form-label">Ingredients</label>
-                  <input type="text" class="form-control" id="search_ingredients" name="ingredients"
-                         value="<%= @ingredients.join(', ') if @ingredients.present? %>"
-                         placeholder="e.g., chicken, tomatoes, onions">
-                  <div class="form-text">Separate multiple ingredients with commas</div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="search_type" class="form-label">Search Type</label>
-                  <select class="form-select" id="search_type" name="search_type">
-                    <option value="all" <%= 'selected' if @search_type == 'all' %>>
-                      Must have ALL ingredients
-                    </option>
-                    <option value="any" <%= 'selected' if @search_type == 'any' %>>
-                      Can have ANY ingredients
-                    </option>
-                  </select>
-                  <div class="form-text">How to match ingredients</div>
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search me-2"></i>Search Recipes
-              </button>
-              <%= link_to "Clear All", search_recipes_path, class: "btn btn-outline-secondary ms-2" %>
-            </form>
-          </div>
-        </div>
+        <%= render 'search_form', 
+            title: "Refine Your Search", 
+            show_categories: false, 
+            show_browse_all: true,
+            turbo_frame_context: false %>
       </div>
     </div>
 
@@ -126,7 +88,7 @@
             <div class="row">
               <div class="col-12 d-flex justify-content-center mt-4">
                 <%= paginate @recipes, window: 2, 
-                    params: { q: @query, ingredients: @ingredients&.join(','), search_type: @search_type }.compact %>
+                    params: { q: @query, ingredients: @ingredients&.join(','), search_type: @search_type, category: params[:category] }.compact %>
               </div>
             </div>
           <% end %>

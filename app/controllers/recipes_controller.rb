@@ -89,6 +89,11 @@ class RecipesController < ApplicationController
 
     @recipes = Recipe.includes(:ingredients)
 
+    # Filter by category if provided
+    if params[:category].present?
+      @recipes = @recipes.where(category: params[:category])
+    end
+
     # Filter by text query if provided
     if @query.present?
       # Search in both recipe titles and ingredients
