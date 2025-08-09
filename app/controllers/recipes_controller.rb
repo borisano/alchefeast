@@ -3,6 +3,24 @@ class RecipesController < ApplicationController
     # Get real recipes from database
     @recipes = Recipe.includes(:ingredients)
 
+    # Initialize search variables
+    @query = params[:q]
+    @ingredients = []
+    @search_type = params[:search_type] || 'all'
+
+    # Handle navbar search_input parameter (fallback for when JS is disabled)
+    if params[:search_input].present? && params[:q].blank? && params[:ingredients].blank?
+      search_value = params[:search_input].strip
+      if search_value.include?(',')
+        # Treat as ingredient search
+        params[:ingredients] = search_value
+      else
+        # Treat as recipe name search
+        params[:q] = search_value
+        @query = search_value
+      end
+    end
+
     # Filter by category if provided
     if params[:category].present?
       @recipes = @recipes.where(category: params[:category])
@@ -20,6 +38,7 @@ class RecipesController < ApplicationController
     # Handle ingredient search
     if params[:ingredients].present?
       ingredient_names = params[:ingredients].split(",").map(&:strip).reject(&:blank?).map(&:downcase)
+      @ingredients = ingredient_names
       search_type = params[:search_type] || "all"
 
       if search_type == "all"
@@ -39,6 +58,9 @@ class RecipesController < ApplicationController
 
     # Fallback to hardcoded categories if cache returns empty
     @popular_categories = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ] if @popular_categories.empty?
+
+    # Set all ingredients for autocomplete (for views that need it)
+    @all_ingredients = Ingredient.distinct.pluck(:name).sort
 
     respond_to do |format|
       format.html
@@ -68,58 +90,5 @@ class RecipesController < ApplicationController
         render turbo_stream: turbo_stream.replace("recipe_modal", "<div>Recipe not found</div>")
       end
     end
-  end
-
-  def search
-    # Handle navbar search input (could be recipe name or comma-separated ingredients)
-    if params[:search_input].present?
-      search_input = params[:search_input].strip
-      if search_input.include?(",")
-        # Treat as ingredient search
-        params[:ingredients] = search_input
-      else
-        # Treat as recipe name search
-        params[:q] = search_input
-      end
-    end
-
-    @query = params[:q]
-    @ingredients = params[:ingredients]&.split(",")&.map(&:strip)&.reject(&:blank?) || []
-    @search_type = params[:search_type] || "all" # "all" or "any"
-
-    @recipes = Recipe.includes(:ingredients)
-
-    # Filter by category if provided
-    if params[:category].present?
-      @recipes = @recipes.where(category: params[:category])
-    end
-
-    # Filter by text query if provided
-    if @query.present?
-      # Search in both recipe titles and ingredients
-      @recipes = @recipes.left_joins(:ingredients)
-                        .where("title LIKE ? OR LOWER(ingredients.name) LIKE ?",
-                               "%#{@query}%", "%#{@query.downcase}%")
-                        .distinct
-    end
-
-    # Filter by ingredients if provided
-    if @ingredients.present?
-      ingredient_names = @ingredients.map(&:downcase)
-
-      if @search_type == "all"
-        # Find recipes that contain ALL of the specified ingredients
-        @recipes = @recipes.with_ingredients(ingredient_names)
-      else
-        # Find recipes that contain ANY of the specified ingredients
-        @recipes = @recipes.with_any_ingredients(ingredient_names)
-      end
-    end
-
-    # Add pagination
-    @recipes = @recipes.page(params[:page]).per(12)
-
-    # Get all available ingredients for autocomplete/suggestions
-    @all_ingredients = Ingredient.distinct.pluck(:name).sort
   end
 end

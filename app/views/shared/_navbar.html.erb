@@ -18,12 +18,9 @@
         <li class="nav-item">
           <%= link_to "All Recipes", recipes_path, class: "nav-link" %>
         </li>
-        <li class="nav-item">
-          <%= link_to "Search", search_recipes_path, class: "nav-link" %>
-        </li>
       </ul>
       
-      <form class="d-flex" role="search" action="<%= search_recipes_path %>" method="get" id="navbar-search-form">
+      <form class="d-flex" role="search" action="<%= recipes_path %>" method="get" id="navbar-search-form">
         <input class="form-control me-2" type="search" name="search_input" id="navbar-search-input" placeholder="Search recipes or ingredients (comma-separated)..." aria-label="Search" style="min-width: 250px;">
         <input type="hidden" name="q" id="navbar-query-input">
         <input type="hidden" name="ingredients" id="navbar-ingredients-input">

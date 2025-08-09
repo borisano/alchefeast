@@ -4,11 +4,9 @@
       <i class="bi bi-funnel me-2"></i><%= title || "Search Recipes" %>
     </h5>
 
-    <!-- Determine action URL based on context -->
-    <% form_action = turbo_frame_context ? recipes_path : search_recipes_path %>
-    <% form_data_attrs = turbo_frame_context ? { controller: "turbo", action: "submit->turbo#submitForm" } : {} %>
-
-    <form action="<%= form_action %>" method="get" <% if turbo_frame_context %>data-controller="turbo" data-action="submit->turbo#submitForm"<% end %>>
+    <!-- Form action always goes to recipes path now -->
+        <!-- Search form - target the recipes-grid turbo frame -->
+    <form action="<%= recipes_path %>" method="get" data-turbo-frame="recipes-grid">
       <!-- Preserve category if present -->
       <% if params[:category].present? %>
         <input type="hidden" name="category" value="<%= params[:category] %>">
@@ -19,7 +17,7 @@
         <div class="col-md-4 mb-3">
           <label for="search_query" class="form-label fw-semibold">Recipe Name</label>
           <input type="text" class="form-control" id="search_query" name="q"
-                 value="<%= params[:q] %>" placeholder="e.g., pasta, chicken curry">
+                 value="<%= params[:q] %>" placeholder="Search for recipe names...">
         </div>
 
         <!-- Ingredient Search -->
@@ -27,7 +25,7 @@
           <label for="search_ingredients" class="form-label fw-semibold">Ingredients</label>
           <input type="text" class="form-control" id="search_ingredients" name="ingredients"
                  value="<%= (defined?(@ingredients) && @ingredients.present?) ? @ingredients.join(', ') : params[:ingredients] %>"
-                 placeholder="e.g., chicken, tomatoes, onions">
+                 placeholder="e.g., chicken, tomatoes, garlic">
           <div class="form-text">Separate multiple ingredients with commas</div>
         </div>
 
@@ -50,14 +48,7 @@
         <button type="submit" class="btn btn-primary">
           <i class="bi bi-search me-2"></i>Search Recipes
         </button>
-        <% if turbo_frame_context %>
-          <%= link_to "Clear All", recipes_path, class: "btn btn-outline-secondary", data: { action: "click->turbo#getTurboStream" } %>
-        <% else %>
-          <%= link_to "Clear All", search_recipes_path, class: "btn btn-outline-secondary" %>
-        <% end %>
-        <% if show_browse_all %>
-          <%= link_to "Browse All", recipes_path, class: "btn btn-outline-primary" %>
-        <% end %>
+        <%= link_to "Clear All", recipes_path, class: "btn btn-outline-secondary", data: { turbo_frame: "recipes-grid" } %>
       </div>
     </form>
 
@@ -67,14 +58,14 @@
       <div class="row">
         <div class="col-12">
           <label class="form-label fw-semibold">Popular Categories</label>
-          <div class="d-flex flex-wrap gap-2" data-controller="turbo">
+          <div class="d-flex flex-wrap gap-2">
             <%= link_to "All", recipes_path, 
                 class: "btn #{'btn-primary' if params[:category].blank?} #{'btn-outline-primary' unless params[:category].blank?} btn-sm",
-                data: { action: "click->turbo#getTurboStream" } %>
+                data: { turbo_frame: "recipes-grid" } %>
             <% @popular_categories.each do |category| %>
               <%= link_to category, recipes_path(category: category), 
                   class: "btn #{'btn-primary' if params[:category] == category} #{'btn-outline-primary' unless params[:category] == category} btn-sm",
-                  data: { action: "click->turbo#getTurboStream" } %>
+                  data: { turbo_frame: "recipes-grid" } %>
             <% end %>
           </div>
         </div>

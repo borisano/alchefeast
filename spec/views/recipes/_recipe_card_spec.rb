@@ -63,7 +63,7 @@ RSpec.describe "recipes/_recipe_card", type: :view do
       expect(rendered).to include("Italian")
       expect(rendered).to include("30min")
       expect(rendered).to include("4.5")
-      expect(rendered).to include("View Recipe")
+      expect(rendered).to include("Quick View")
     end
 
     it "includes the recipe card structure" do

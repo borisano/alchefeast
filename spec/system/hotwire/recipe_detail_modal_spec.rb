@@ -113,10 +113,10 @@ RSpec.describe "Recipe Detail Modal/Drawer", type: :system do
 
   describe "opening recipe modal from search results" do
     it "works from search results page" do
-      visit search_recipes_path(q: recipe.title.split.first)
+      visit recipes_path(q: recipe.title.split.first)
 
-      # Should be on search page
-      expect(page).to have_content("Search Results")
+      # Should be on recipes page with search results
+      expect(page).to have_content("All Recipes")
       expect(page).to have_content(recipe.title)
 
       # Click Quick View to open modal

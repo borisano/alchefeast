@@ -103,7 +103,7 @@ RSpec.describe "Recipe Grid Turbo Frame", type: :system do
       # Search for chicken in the ingredients search form
       within 'turbo-frame[id="filters"]' do
         fill_in "ingredients", with: "chicken"
-        click_button class: "btn-warning"
+        click_button "Search Recipes"
       end
 
       # Should stay on recipes page but with search parameters

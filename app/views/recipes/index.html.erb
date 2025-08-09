@@ -10,6 +10,31 @@
           <i class="bi bi-book me-2"></i>All Recipes
         </h1>
         <p class="lead text-muted">Discover amazing recipes from around the world</p>
+        
+        <!-- Search Criteria Display -->
+        <% if params[:q].present? || params[:ingredients].present? %>
+          <div class="mt-3">
+            <% if params[:q].present? %>
+              <p class="lead">
+                Showing results for: <strong>"<%= params[:q] %>"</strong>
+              </p>
+            <% end %>
+
+            <% if params[:ingredients].present? %>
+              <% ingredients_array = params[:ingredients].split(",").map(&:strip).reject(&:blank?) %>
+              <p class="lead">
+                <% if params[:search_type] == "all" || params[:search_type].blank? %>
+                  Recipes that contain <strong>ALL</strong> of these ingredients:
+                <% else %>
+                  Recipes that contain <strong>ANY</strong> of these ingredients:
+                <% end %>
+                <% ingredients_array.each_with_index do |ingredient, index| %>
+                  <span class="badge bg-success me-1"><%= ingredient %></span><%= ',' if index < ingredients_array.length - 1 %>
+                <% end %>
+              </p>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
 
@@ -19,9 +44,7 @@
         <div class="col-12">
           <%= render 'search_form', 
               title: "Filter Recipes", 
-              show_categories: true, 
-              show_browse_all: false,
-              turbo_frame_context: true %>
+              show_categories: true %>
         </div>
       </div>
     <% end %>

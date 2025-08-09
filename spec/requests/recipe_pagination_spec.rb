@@ -61,20 +61,20 @@ RSpec.describe 'Recipe Pagination API', type: :request do
     end
   end
 
-  describe 'GET /recipes/search' do
+  describe 'GET /recipes with search functionality' do
     context 'search with pagination' do
       let!(:chocolate_recipes) { create_list(:recipe, 20, title: 'Chocolate Cake') }
       let!(:vanilla_recipes) { create_list(:recipe, 5, title: 'Vanilla Cake') }
 
       it 'paginates search results' do
-        get search_recipes_path, params: { q: 'Chocolate' }
+        get recipes_path, params: { q: 'Chocolate' }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('Showing 1-12')
         expect(response.body).to include('of 20 recipes')
       end
 
       it 'maintains search parameters in pagination links' do
-        get search_recipes_path, params: { q: 'Chocolate', page: 2 }
+        get recipes_path, params: { q: 'Chocolate', page: 2 }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('Showing 13-20')
         expect(response.body).to include('of 20 recipes')
@@ -88,7 +88,7 @@ RSpec.describe 'Recipe Pagination API', type: :request do
           create(:recipe_ingredient, recipe: recipe, ingredient: flour)
         end
 
-        get search_recipes_path, params: { ingredients: 'flour', search_type: 'all' }
+        get recipes_path, params: { ingredients: 'flour', search_type: 'all' }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('Showing 1-12')
         expect(response.body).to include('of 15 recipes')
@@ -111,7 +111,7 @@ RSpec.describe 'Recipe Pagination API', type: :request do
           page: 2
         }
 
-        get search_recipes_path, params: params
+        get recipes_path, params: params
         expect(response).to have_http_status(:success)
         expect(response.body).to include('q=Cake')
         expect(response.body).to include('ingredients=flour%2Csugar')
@@ -121,10 +121,11 @@ RSpec.describe 'Recipe Pagination API', type: :request do
 
     context 'empty search results' do
       it 'handles pagination for empty results gracefully' do
-        get search_recipes_path, params: { q: 'NonexistentRecipe' }
+        get recipes_path, params: { q: 'NonexistentRecipe' }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('No recipes found')
-        expect(response.body).not_to include('pagination')
+        expect(response.body).not_to include('class="pagination')
+        expect(response.body).not_to include('aria-label="Recipes pagination"')
       end
     end
   end
