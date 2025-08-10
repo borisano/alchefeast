@@ -87,7 +87,7 @@ RSpec.describe 'Recipe Pagination', type: :feature do
     let!(:other_recipes) { create_list(:recipe, 5, title: 'Vanilla Pudding') }
 
     scenario 'paginates search results' do
-      visit search_recipes_path(q: 'Chocolate')
+      visit recipes_path(q: 'Chocolate')
 
       expect(page).to have_content('Showing 1-12 of 20 recipes')
       expect(page).to have_selector('.pagination')
@@ -96,7 +96,7 @@ RSpec.describe 'Recipe Pagination', type: :feature do
     end
 
     scenario 'maintains search parameters across pagination' do
-      visit search_recipes_path(q: 'Chocolate')
+      visit recipes_path(q: 'Chocolate')
 
       click_link '2'
 
@@ -119,7 +119,7 @@ RSpec.describe 'Recipe Pagination', type: :feature do
       end
 
       scenario 'maintains ingredient search parameters across pagination' do
-        visit search_recipes_path(ingredients: 'flour,sugar', search_type: 'all')
+        visit recipes_path(ingredients: 'flour,sugar', search_type: 'all')
 
         expect(page).to have_content('Showing 1-12 of 20 recipes')
 

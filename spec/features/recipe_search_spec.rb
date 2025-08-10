@@ -54,9 +54,9 @@ RSpec.describe 'Recipe Search', type: :feature do
     end
   end
 
-  describe 'advanced search page' do
+  describe 'advanced search functionality on recipes page' do
     before do
-      visit search_recipes_path
+      visit recipes_path
     end
 
     it 'displays the search form' do
@@ -146,13 +146,13 @@ RSpec.describe 'Recipe Search', type: :feature do
 
       expect(page).to have_field('Recipe Name', with: '')
       expect(page).to have_field('Ingredients', with: '')
-      expect(page).to have_content('Refine Your Search')
+      expect(page).to have_content('Filter Recipes')
     end
   end
 
   describe 'search results display' do
     before do
-      visit search_recipes_path
+      visit recipes_path
       fill_in 'Ingredients', with: 'flour'
       click_button 'Search Recipes'
     end
@@ -160,13 +160,13 @@ RSpec.describe 'Recipe Search', type: :feature do
     it 'displays recipe cards with proper information' do
       within('.card', text: 'Chocolate Cake') do
         expect(page).to have_content('Chocolate Cake')
-        expect(page).to have_link('View Recipe')
+        expect(page).to have_link('Quick View')
         expect(page).to have_css('img')
       end
     end
 
     it 'shows matching ingredients when searching by ingredients' do
-      visit search_recipes_path(ingredients: 'chocolate chips')
+      visit recipes_path(ingredients: 'chocolate chips')
 
       within('.card', text: 'Chocolate Cake') do
         expect(page).to have_content('Matching Ingredients:')

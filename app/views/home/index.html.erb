@@ -17,7 +17,7 @@
           <!-- Ingredient Search Form -->
           <div class="card border-0 shadow-sm">
             <div class="card-body">
-              <form action="<%= search_recipes_path %>" method="get">
+              <form action="<%= recipes_path %>" method="get">
                 <div class="mb-3">
                   <label for="ingredients" class="form-label fw-semibold">
                     <i class="bi bi-basket2-fill text-success me-2"></i>
@@ -53,7 +53,7 @@
         <% if @popular_ingredients.any? %>
           <div class="d-flex flex-wrap gap-2">
             <% @popular_ingredients.each do |ingredient| %>
-              <%= link_to search_recipes_path(ingredients: ingredient), 
+              <%= link_to recipes_path(ingredients: ingredient), 
                           class: "btn btn-outline-primary btn-sm" do %>
                 <i class="bi bi-plus-circle me-1"></i><%= ingredient %>
               <% end %>

@@ -1,0 +1,104 @@
+<%= turbo_frame_tag "recipes-grid" do %>
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">
+          <i class="bi bi-grid-3x3-gap me-2"></i>
+          <%= recipes.total_count %> Recipe<%= 's' if recipes.total_count != 1 %> Found
+          <% if params[:category].present? %>
+            in <span class="text-primary"><%= params[:category] %></span>
+          <% end %>
+          <% if params[:q].present? %>
+            for "<span class="text-primary"><%= params[:q] %></span>"
+          <% end %>
+          <% if params[:ingredients].present? %>
+            with ingredients: <span class="text-success"><%= params[:ingredients] %></span>
+          <% end %>
+        </h4>
+
+        <div class="d-flex align-items-center gap-3">
+          <% if recipes.respond_to?(:current_page) && recipes.total_count > 0 %>
+            <small class="text-muted">
+              Showing <%= recipes.offset_value + 1 %>-<%= [recipes.offset_value + recipes.limit_value, recipes.total_count].min %> 
+              of <%= recipes.total_count %> recipes
+            </small>
+          <% end %>
+          
+          <% if recipes.any? %>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-secondary btn-sm active">
+                <i class="bi bi-grid-3x3-gap"></i> Grid
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-list"></i> List
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="row">
+        <% recipes.each do |recipe| %>
+          <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+            <%= render 'recipe_card', recipe: recipe, search_ingredients: @ingredients %>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Pagination controls -->
+      <% if recipes.respond_to?(:current_page) && recipes.total_pages > 1 %>
+        <div class="row">
+          <div class="col-12 d-flex justify-content-center mt-4" data-controller="turbo">
+            <%= paginate recipes, 
+                window: 2, 
+                params: { 
+                  category: params[:category], 
+                  q: params[:q], 
+                  ingredients: params[:ingredients],
+                  search_type: params[:search_type]
+                }.compact %>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if recipes.empty? %>
+        <!-- No Results -->
+        <div class="text-center py-5">
+          <div class="mb-4">
+            <i class="bi bi-emoji-frown display-1 text-muted"></i>
+          </div>
+          <h3 class="text-muted mb-3">No recipes found</h3>
+          <p class="text-muted mb-4">
+            We couldn't find any recipes matching your search criteria.
+            <br>Try adjusting your search terms or browse all recipes.
+          </p>
+
+          <div class="d-flex justify-content-center gap-3">
+            <%= link_to "Clear Filters", recipes_path, class: "btn btn-primary", data: { turbo_frame: "recipes-grid" } %>
+            <%= link_to "Browse All Recipes", recipes_path, class: "btn btn-outline-secondary", data: { turbo_frame: "recipes-grid" } %>
+            <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary" %>
+          </div>
+
+          <!-- Search Suggestions -->
+          <div class="mt-4">
+            <h5 class="text-muted">Search Suggestions:</h5>
+            <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+              <%= link_to recipes_path(q: "pasta"), class: "btn btn-outline-primary btn-sm", data: { turbo_frame: "recipes-grid" } do %>
+                <i class="bi bi-search me-1"></i>Pasta Recipes
+              <% end %>
+              <%= link_to recipes_path(q: "chicken"), class: "btn btn-outline-primary btn-sm", data: { turbo_frame: "recipes-grid" } do %>
+                <i class="bi bi-search me-1"></i>Chicken Recipes
+              <% end %>
+              <%= link_to recipes_path(ingredients: "tomatoes,onions"), class: "btn btn-outline-success btn-sm", data: { turbo_frame: "recipes-grid" } do %>
+                <i class="bi bi-basket2 me-1"></i>Tomatoes & Onions
+              <% end %>
+              <%= link_to recipes_path(ingredients: "eggs,cheese"), class: "btn btn-outline-success btn-sm", data: { turbo_frame: "recipes-grid" } do %>
+                <i class="bi bi-basket2 me-1"></i>Eggs & Cheese
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

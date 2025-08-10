@@ -1,0 +1,7 @@
+<% if recipes.respond_to?(:current_page) %>
+  <div class="row">
+    <div class="col-12 d-flex justify-content-center mt-4">
+      <%= paginate recipes, window: 2, params: { turbo_frame: "recipes-grid" } %>
+    </div>
+  </div>
+<% end %>

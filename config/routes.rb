@@ -14,8 +14,8 @@ Rails.application.routes.draw do
 
   # Recipe routes
   resources :recipes, only: [ :index, :show ] do
-    collection do
-      get :search
+    member do
+      get :modal
     end
   end
 end
