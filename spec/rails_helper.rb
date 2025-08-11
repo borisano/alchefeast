@@ -72,6 +72,9 @@ RSpec.configure do |config|
 
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
+
+  # Include TimeHelpers for time travel in tests
+  config.include ActiveSupport::Testing::TimeHelpers
 end
 
 # Shoulda Matchers configuration

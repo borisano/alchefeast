@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   resources :recipes, only: [ :index, :show ] do
     member do
       get :modal
+      post :ask_ai
     end
   end
 end

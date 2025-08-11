@@ -8,6 +8,9 @@ class Recipe < ApplicationRecord
 
   before_save :calculate_total_time
 
+  # AI instructions status tracking
+  enum :ai_instructions_status, { idle: 0, pending: 1, ready: 2, failed: 3 }, prefix: :ai_instructions
+
   scope :by_category, ->(category) { where(category: category) if category.present? }
   scope :by_cuisine, ->(cuisine) { where(cuisine: cuisine) if cuisine.present? }
   scope :by_max_time, ->(max_time) { where("total_time <= ?", max_time) if max_time.present? }

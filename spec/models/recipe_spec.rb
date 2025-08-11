@@ -13,6 +13,51 @@ RSpec.describe Recipe, type: :model do
     it { should validate_numericality_of(:prep_time).is_greater_than_or_equal_to(0).allow_nil }
   end
 
+  describe 'ai instructions enum' do
+    it 'has the correct enum mapping and default' do
+      recipe = described_class.new(title: 'Test')
+      expect(recipe.ai_instructions_status).to eq('idle')
+      expect(described_class.ai_instructions_statuses).to eq({ 'idle' => 0, 'pending' => 1, 'ready' => 2, 'failed' => 3 })
+    end
+
+    it 'exposes prefixed predicate methods' do
+      recipe = create(:recipe)
+      expect(recipe.ai_instructions_idle?).to be(true)
+      recipe.ai_instructions_status = :pending
+      expect(recipe.ai_instructions_pending?).to be(true)
+      recipe.ai_instructions_status = :ready
+      expect(recipe.ai_instructions_ready?).to be(true)
+      recipe.ai_instructions_status = :failed
+      expect(recipe.ai_instructions_failed?).to be(true)
+    end
+
+    it 'allows setting AI instructions with status transitions' do
+      recipe = create(:recipe)
+
+      # Test pending state
+      recipe.update!(ai_instructions_status: :pending)
+      expect(recipe.ai_instructions_pending?).to be(true)
+
+      # Test ready state with content
+      recipe.update!(
+        ai_instructions_status: :ready,
+        ai_instructions: "Step 1: Do something",
+        ai_instructions_generated_at: Time.current
+      )
+      expect(recipe.ai_instructions_ready?).to be(true)
+      expect(recipe.ai_instructions).to eq("Step 1: Do something")
+      expect(recipe.ai_instructions_generated_at).to be_present
+
+      # Test failed state with error
+      recipe.update!(
+        ai_instructions_status: :failed,
+        ai_instructions_error: "OpenAI error"
+      )
+      expect(recipe.ai_instructions_failed?).to be(true)
+      expect(recipe.ai_instructions_error).to eq("OpenAI error")
+    end
+  end
+
   describe 'callbacks' do
     describe '#calculate_total_time' do
       it 'calculates total_time from cook_time and prep_time' do
