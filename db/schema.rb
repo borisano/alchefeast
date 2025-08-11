@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_07_143025) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_10_120500) do
   create_table "ingredients", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -43,6 +43,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_07_143025) do
     t.text "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "ai_instructions"
+    t.integer "ai_instructions_status", default: 0, null: false
+    t.datetime "ai_instructions_generated_at"
+    t.text "ai_instructions_error"
+    t.index ["ai_instructions_status"], name: "index_recipes_on_ai_instructions_status"
     t.index ["category"], name: "index_recipes_on_category"
     t.index ["ratings"], name: "index_recipes_on_ratings"
     t.index ["title"], name: "index_recipes_on_title"

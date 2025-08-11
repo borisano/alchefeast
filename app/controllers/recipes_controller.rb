@@ -99,15 +99,11 @@ class RecipesController < ApplicationController
     @recipe_ingredients = @recipe.recipe_ingredients.includes(:ingredient)
 
     # Idempotency: if already pending or ready, do nothing quickly
-    if @recipe.ai_instructions_status.in?([ "pending", "ready" ]) && @recipe.ai_instructions.present?
+    if @recipe.ai_instructions_status.in?([ "pending", "ready" ])
       respond_to do |format|
         format.html { redirect_back fallback_location: recipe_path(@recipe), notice: "Already processed." }
         format.turbo_stream do
-          if params[:from_card] == "1"
-            render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
-          else
-            render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
-          end
+          render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
         end
       end
       return

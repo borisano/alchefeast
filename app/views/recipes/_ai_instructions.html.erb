@@ -2,7 +2,7 @@
   <% if recipe.ai_instructions.present? && recipe.ai_instructions_status == "ready" %>
     <div class="alert alert-success mb-0">
       <h6 class="mb-2">AI Cooking Steps</h6>
-      <pre class="mb-0 small"><%= recipe.ai_instructions %></pre>
+      <div class="mb-0 small" style="white-space: pre-wrap; word-wrap: break-word;"><%= recipe.ai_instructions %></div>
       <% if recipe.ai_instructions_generated_at.present? %>
         <small class="text-muted d-block mt-1">Generated at <%= l(recipe.ai_instructions_generated_at, format: :short) %></small>
       <% end %>

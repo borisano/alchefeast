@@ -6,12 +6,12 @@ RSpec.describe GenerateAiInstructionsJob, type: :job do
   describe "#perform" do
     it "processes pending recipe and updates with AI instructions" do
       recipe = create(:recipe, ai_instructions_status: :pending)
-      
+
       travel_to Time.current do
         expect {
           described_class.perform_now(recipe.id)
         }.to change { recipe.reload.ai_instructions_status }.from("pending").to("ready")
-        
+
         recipe.reload
         expect(recipe.ai_instructions).to be_present
         expect(recipe.ai_instructions).to match(/AI steps: \w+/)
@@ -44,7 +44,7 @@ RSpec.describe GenerateAiInstructionsJob, type: :job do
 
       recipe.reload
       expect(recipe.ai_instructions_status).to eq("failed")
-      expect(recipe.ai_instructions_error).to eq("Test error")
+      expect(recipe.ai_instructions_error).to eq("Failed to generate AI instructions: Test error")
     end
 
     it "broadcasts turbo stream update when complete" do

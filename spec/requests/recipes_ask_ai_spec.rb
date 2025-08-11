@@ -17,22 +17,22 @@ RSpec.describe "Recipes ask_ai", type: :request do
 
       it "is idempotent if already ready" do
         recipe.update!(ai_instructions_status: :ready, ai_instructions: "Done", ai_instructions_generated_at: Time.current)
-        
+
         expect {
           post ask_ai_recipe_path(recipe)
         }.not_to have_enqueued_job(GenerateAiInstructionsJob)
-        
+
         expect(response).to redirect_to(recipe_path(recipe))
         expect(recipe.reload.ai_instructions_status).to eq("ready")
       end
 
       it "is idempotent if already pending" do
         recipe.update!(ai_instructions_status: :pending)
-        
+
         expect {
           post ask_ai_recipe_path(recipe)
         }.not_to have_enqueued_job(GenerateAiInstructionsJob)
-        
+
         expect(response).to redirect_to(recipe_path(recipe))
         expect(recipe.reload.ai_instructions_status).to eq("pending")
       end
@@ -53,16 +53,16 @@ RSpec.describe "Recipes ask_ai", type: :request do
 
       it "returns turbo stream for idempotent cases" do
         recipe.update!(ai_instructions_status: :ready, ai_instructions: "Done")
-        
+
         post ask_ai_recipe_path(recipe), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        
+
         expect(response).to have_http_status(200)
         expect(response.content_type).to include("turbo-stream")
       end
 
       it "includes from_card parameter handling" do
         post ask_ai_recipe_path(recipe, from_card: "1"), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        
+
         expect(response).to have_http_status(200)
         expect(response.body).to include("ai_instructions_recipe_#{recipe.id}")
       end

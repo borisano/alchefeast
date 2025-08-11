@@ -30,6 +30,32 @@ RSpec.describe Recipe, type: :model do
       recipe.ai_instructions_status = :failed
       expect(recipe.ai_instructions_failed?).to be(true)
     end
+
+    it 'allows setting AI instructions with status transitions' do
+      recipe = create(:recipe)
+
+      # Test pending state
+      recipe.update!(ai_instructions_status: :pending)
+      expect(recipe.ai_instructions_pending?).to be(true)
+
+      # Test ready state with content
+      recipe.update!(
+        ai_instructions_status: :ready,
+        ai_instructions: "Step 1: Do something",
+        ai_instructions_generated_at: Time.current
+      )
+      expect(recipe.ai_instructions_ready?).to be(true)
+      expect(recipe.ai_instructions).to eq("Step 1: Do something")
+      expect(recipe.ai_instructions_generated_at).to be_present
+
+      # Test failed state with error
+      recipe.update!(
+        ai_instructions_status: :failed,
+        ai_instructions_error: "OpenAI error"
+      )
+      expect(recipe.ai_instructions_failed?).to be(true)
+      expect(recipe.ai_instructions_error).to eq("OpenAI error")
+    end
   end
 
   describe 'callbacks' do

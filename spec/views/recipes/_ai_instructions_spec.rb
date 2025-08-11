@@ -8,7 +8,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
 
     it "shows placeholder text" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("Click \"Ask AI how to cook it\" to generate cooking steps")
       expect(rendered).to include("bi-magic")
     end
@@ -19,7 +19,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
 
     it "shows spinner and generating message" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("Generating AI instructions...")
       expect(rendered).to include("spinner-border")
       expect(rendered).to include("alert-info")
@@ -37,7 +37,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
 
     it "shows AI cooking steps" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("AI Cooking Steps")
       expect(rendered).to include("1. Heat the pan")
       expect(rendered).to include("2. Add ingredients")
@@ -63,14 +63,14 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
 
     it "shows error message" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("Failed to generate AI instructions")
       expect(rendered).to include("alert-danger")
     end
 
     it "shows error details in expandable section" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("Error details")
       expect(rendered).to include("OpenAI API error")
       expect(rendered).to include("<details")
@@ -80,7 +80,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
   context "dom_id generation" do
     it "generates correct dom_id for targeting" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
-      
+
       expect(rendered).to include("id=\"ai_instructions_recipe_#{recipe.id}\"")
     end
   end
