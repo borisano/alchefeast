@@ -238,9 +238,16 @@
                 </button>
               </div>
               <div class="col-md-8 d-flex align-items-center">
-                <%= button_to ask_ai_recipe_path(@recipe), method: :post, class: "btn btn-primary ms-auto",
-                              data: { turbo: true, turbo_confirm: nil } do %>
-                  <i class="bi bi-magic me-2"></i>Ask Alchemist how to cook it
+                <% if @recipe.ai_instructions_status == "ready" %>
+                  <%= button_to ask_ai_recipe_path(@recipe), method: :post, class: "btn btn-success ms-auto",
+                                data: { turbo: true, turbo_confirm: nil } do %>
+                    <i class="bi bi-check-circle me-2"></i>Check out Alchemist cooking advice
+                  <% end %>
+                <% else %>
+                  <%= button_to ask_ai_recipe_path(@recipe), method: :post, class: "btn btn-primary ms-auto",
+                                data: { turbo: true, turbo_confirm: nil } do %>
+                    <i class="bi bi-magic me-2"></i>Ask Alchemist how to cook it
+                  <% end %>
                 <% end %>
               </div>
             </div>

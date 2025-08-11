@@ -160,6 +160,10 @@
                 <%= button_to ask_ai_recipe_path(@recipe, from_card: 1), method: :post, class: "btn btn-warning btn-sm ms-2", form: { data: { turbo_stream: true } } do %>
                   <i class="bi bi-magic me-1"></i>Ask Alchemist
                 <% end %>
+              <% elsif @recipe.ai_instructions_status == "ready" %>
+                <span class="badge bg-success ms-2">
+                  <i class="bi bi-check-circle me-1"></i>Ready to view below
+                </span>
               <% end %>
             </div>
           </div>
