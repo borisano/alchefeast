@@ -142,7 +142,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <button class="btn btn-link text-white text-decoration-none p-0 flex-grow-1 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#ai-instructions-collapse-<%= @recipe.id %>" aria-expanded="<%= @recipe.ai_instructions_status == 'pending' || @recipe.ai_instructions_status == 'ready' %>" aria-controls="ai-instructions-collapse-<%= @recipe.id %>">
                 <h6 class="card-title mb-0">
-                  <i class="bi bi-magic me-2"></i>AI Cooking Steps
+                  <i class="bi bi-magic me-2"></i>Alchemist advice on cooking
                   <% if @recipe.ai_instructions_status == "ready" %>
                     <span class="badge bg-light text-success ms-2">Ready</span>
                   <% elsif @recipe.ai_instructions_status == "pending" %>
@@ -158,7 +158,7 @@
               </button>
               <% if @recipe.ai_instructions_status == "idle" || @recipe.ai_instructions_status == "failed" %>
                 <%= button_to ask_ai_recipe_path(@recipe, from_card: 1), method: :post, class: "btn btn-warning btn-sm ms-2", form: { data: { turbo_stream: true } } do %>
-                  <i class="bi bi-magic me-1"></i>Ask AI
+                  <i class="bi bi-magic me-1"></i>Ask Alchemist
                 <% end %>
               <% end %>
             </div>

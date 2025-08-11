@@ -1,7 +1,7 @@
 <div id="<%= dom_id(recipe, :ai_instructions) %>">
   <% if recipe.ai_instructions.present? && recipe.ai_instructions_status == "ready" %>
     <div class="alert alert-success mb-0">
-      <h6 class="mb-2">AI Cooking Steps</h6>
+      <h6 class="mb-2">Alchemist advice on cooking</h6>
       <div class="mb-0 small" style="white-space: pre-wrap; word-wrap: break-word;"><%= recipe.ai_instructions %></div>
       <% if recipe.ai_instructions_generated_at.present? %>
         <small class="text-muted d-block mt-1">Generated at <%= l(recipe.ai_instructions_generated_at, format: :short) %></small>
@@ -24,7 +24,7 @@
     </div>
   <% else %>
     <div class="text-muted small text-center py-3">
-      <i class="bi bi-magic me-1"></i>Click "Ask AI how to cook it" to generate cooking steps
+      <i class="bi bi-magic me-1"></i>Click "Ask Alchemist how to cook it" to generate cooking steps
     </div>
   <% end %>
 </div>

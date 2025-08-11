@@ -9,7 +9,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
     it "shows placeholder text" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
 
-      expect(rendered).to include("Click \"Ask AI how to cook it\" to generate cooking steps")
+      expect(rendered).to include("Click \"Ask Alchemist how to cook it\" to generate cooking steps")
       expect(rendered).to include("bi-magic")
     end
   end
@@ -38,7 +38,7 @@ RSpec.describe "recipes/_ai_instructions.html.erb", type: :view do
     it "shows AI cooking steps" do
       render partial: "recipes/ai_instructions", locals: { recipe: recipe }
 
-      expect(rendered).to include("AI Cooking Steps")
+      expect(rendered).to include("Alchemist advice on cooking")
       expect(rendered).to include("1. Heat the pan")
       expect(rendered).to include("2. Add ingredients")
       expect(rendered).to include("3. Cook for 5 minutes")

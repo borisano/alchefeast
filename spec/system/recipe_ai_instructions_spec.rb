@@ -14,11 +14,11 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       visit recipe_path(recipe)
 
       expect(page).to have_content(recipe.title)
-      expect(page).to have_button("Ask AI how to cook it")
-      expect(page).to have_content("Click \"Ask AI how to cook it\" to generate cooking steps")
+      expect(page).to have_button("Ask Alchemist how to cook it")
+      expect(page).to have_content("Click \"Ask Alchemist how to cook it\" to generate cooking steps")
 
       # Click the AI button
-      click_button "Ask AI how to cook it"
+      click_button "Ask Alchemist how to cook it"
 
       # Should immediately show pending state
       expect(page).to have_content("Generating AI instructions...")
@@ -28,7 +28,7 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       perform_enqueued_jobs
 
       # Should show AI instructions
-      expect(page).to have_content("AI Cooking Steps")
+      expect(page).to have_content("Alchemist advice on cooking")
       expect(page).to have_content("AI steps:")
       expect(page).to have_content("Generated at")
       expect(page).not_to have_css(".spinner-border")
@@ -44,9 +44,9 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       visit recipe_path(recipe)
 
       expect(page).to have_content("Existing AI instructions")
-      expect(page).to have_button("Ask AI how to cook it")
+      expect(page).to have_button("Ask Alchemist how to cook it")
 
-      click_button "Ask AI how to cook it"
+      click_button "Ask Alchemist how to cook it"
 
       # Should not show spinner, should keep existing content
       expect(page).not_to have_css(".spinner-border")
@@ -58,9 +58,9 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
     it "opens modal and allows AI generation from card" do
       visit recipes_path
 
-      # Find the recipe card and click "Ask AI how to cook it"
+      # Find the recipe card and click "Ask Alchemist how to cook it"
       within(".recipe-card", text: recipe.title) do
-        click_button "Ask AI how to cook it"
+        click_button "Ask Alchemist how to cook it"
       end
 
       # Should open modal
@@ -68,14 +68,14 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       expect(page).to have_content(recipe.title)
 
       # Should show AI Instructions section
-      expect(page).to have_content("AI Cooking Steps")
+      expect(page).to have_content("Alchemist advice on cooking")
 
       # Click Ask AI button in modal header
       within("#ai-instructions-collapse-#{recipe.id}") do
-        expect(page).to have_button("Ask AI")
+        expect(page).to have_button("Ask Alchemist")
       end
 
-      click_button "Ask AI"
+      click_button "Ask Alchemist"
 
       # Should show pending state
       expect(page).to have_content("Generating...")
@@ -103,11 +103,11 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       expect(page).to have_css("#ai-instructions-collapse-#{recipe.id}.collapse:not(.show)")
 
       # Click to expand AI section
-      click_button "AI Cooking Steps"
+      click_button "Alchemist advice on cooking"
       expect(page).to have_css("#ai-instructions-collapse-#{recipe.id}.collapse.show")
 
       # Generate AI instructions
-      click_button "Ask AI"
+      click_button "Ask Alchemist"
       perform_enqueued_jobs
 
       # Modal should still be open and AI section should remain expanded
@@ -123,7 +123,7 @@ RSpec.describe "Recipe AI Instructions Integration", type: :system do
       allow_any_instance_of(GenerateAiInstructionsJob).to receive(:perform).and_raise("Test error")
 
       visit recipe_path(recipe)
-      click_button "Ask AI how to cook it"
+      click_button "Ask Alchemist how to cook it"
 
       perform_enqueued_jobs
 
