@@ -11,7 +11,7 @@
     <div class="modal-drawer show" 
          tabindex="-1" 
          data-recipe-modal-target="modal"
-         style="position: fixed; top: 0; right: 0; width: 50%; min-width: 600px; height: 100vh; background: white; z-index: 1055; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3); transform: translateX(0); transition: transform 1s ease;">
+         style="position: fixed; top: 0; right: 0; width: 70%; min-width: 600px; height: 100vh; background: white; z-index: 1055; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3); transform: translateX(0); transition: transform 1s ease;">
     <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
       <h5 class="modal-title fw-bold text-primary mb-0">
         <i class="bi bi-book me-2"></i><%= @recipe.title %>
@@ -157,7 +157,7 @@
                 </h6>
               </button>
               <% if @recipe.ai_instructions_status == "idle" || @recipe.ai_instructions_status == "failed" %>
-                <%= button_to ask_ai_recipe_path(@recipe, from_card: 1), method: :post, class: "btn btn-warning btn-sm ms-2", form: { data: { turbo_stream: true } } do %>
+                <%= button_to ask_ai_recipe_path(@recipe, from_card: 1), method: :post, class: "btn btn-warning btn-sm ms-2", form: { data: { turbo_stream: true } }, onclick: "setTimeout(() => { const collapse = document.getElementById('ai-instructions-collapse-#{@recipe.id}'); if (collapse && !collapse.classList.contains('show')) { new bootstrap.Collapse(collapse, { toggle: true }); } }, 100);" do %>
                   <i class="bi bi-magic me-1"></i>Ask Alchemist
                 <% end %>
               <% elsif @recipe.ai_instructions_status == "ready" %>
