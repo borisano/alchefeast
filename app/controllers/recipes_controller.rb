@@ -1,4 +1,6 @@
 class RecipesController < ApplicationController
+  include ActionView::RecordIdentifier
+
   def index
     # Get real recipes from database
     @recipes = Recipe.includes(:ingredients)
@@ -6,12 +8,12 @@ class RecipesController < ApplicationController
     # Initialize search variables
     @query = params[:q]
     @ingredients = []
-    @search_type = params[:search_type] || 'all'
+    @search_type = params[:search_type] || "all"
 
     # Handle navbar search_input parameter (fallback for when JS is disabled)
     if params[:search_input].present? && params[:q].blank? && params[:ingredients].blank?
       search_value = params[:search_input].strip
-      if search_value.include?(',')
+      if search_value.include?(",")
         # Treat as ingredient search
         params[:ingredients] = search_value
       else
@@ -89,6 +91,51 @@ class RecipesController < ApplicationController
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace("recipe_modal", "<div>Recipe not found</div>")
       end
+    end
+  end
+
+  def ask_ai
+    @recipe = Recipe.find(params[:id])
+    @recipe_ingredients = @recipe.recipe_ingredients.includes(:ingredient)
+
+    # Idempotency: if already pending or ready, do nothing quickly
+    if @recipe.ai_instructions_status.in?([ "pending", "ready" ]) && @recipe.ai_instructions.present?
+      respond_to do |format|
+        format.html { redirect_back fallback_location: recipe_path(@recipe), notice: "Already processed." }
+        format.turbo_stream do
+          if params[:from_card] == "1"
+            render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
+          else
+            render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
+          end
+        end
+      end
+      return
+    end
+
+    # Mark as pending immediately
+    @recipe.update!(ai_instructions_status: :pending, ai_instructions_error: nil)
+
+    # Enqueue background job to process
+    GenerateAiInstructionsJob.perform_later(@recipe.id)
+
+    respond_to do |format|
+      format.html { redirect_back fallback_location: recipe_path(@recipe), notice: "Processing..." }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(dom_id(@recipe, :ai_instructions), partial: "recipes/ai_instructions", locals: { recipe: @recipe })
+      end
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to recipes_path, alert: "Recipe not found" }
+      format.turbo_stream { head :not_found }
+    end
+  rescue => e
+    Rails.logger.error("ask_ai failed for Recipe #{params[:id]}: #{e.class} - #{e.message}")
+    @recipe.update_columns(ai_instructions_status: Recipe.ai_instructions_statuses[:failed], ai_instructions_error: e.message) if @recipe&.persisted?
+    respond_to do |format|
+      format.html { redirect_back fallback_location: recipe_path(@recipe), alert: "Failed to generate AI instructions." }
+      format.turbo_stream { head :internal_server_error }
     end
   end
 end

@@ -13,6 +13,25 @@ RSpec.describe Recipe, type: :model do
     it { should validate_numericality_of(:prep_time).is_greater_than_or_equal_to(0).allow_nil }
   end
 
+  describe 'ai instructions enum' do
+    it 'has the correct enum mapping and default' do
+      recipe = described_class.new(title: 'Test')
+      expect(recipe.ai_instructions_status).to eq('idle')
+      expect(described_class.ai_instructions_statuses).to eq({ 'idle' => 0, 'pending' => 1, 'ready' => 2, 'failed' => 3 })
+    end
+
+    it 'exposes prefixed predicate methods' do
+      recipe = create(:recipe)
+      expect(recipe.ai_instructions_idle?).to be(true)
+      recipe.ai_instructions_status = :pending
+      expect(recipe.ai_instructions_pending?).to be(true)
+      recipe.ai_instructions_status = :ready
+      expect(recipe.ai_instructions_ready?).to be(true)
+      recipe.ai_instructions_status = :failed
+      expect(recipe.ai_instructions_failed?).to be(true)
+    end
+  end
+
   describe 'callbacks' do
     describe '#calculate_total_time' do
       it 'calculates total_time from cook_time and prep_time' do
