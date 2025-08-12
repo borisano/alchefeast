@@ -42,7 +42,7 @@ class AiInstructionService
 
     def openai_client
       @openai_client ||= begin
-        api_key = Rails.application.credentials.openai_api_key
+        api_key = ENV["OPENAI_API_KEY"] || Rails.application.credentials.openai_api_key
         Rails.logger.debug("API key present: #{api_key.present?}")
         return nil unless api_key.present?
 

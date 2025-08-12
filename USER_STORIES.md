@@ -23,3 +23,13 @@
 - I can see popular ingredients used across recipes
 - I can click on popular ingredients to find related recipes
 - The interface guides me from inspiration to actionable cooking plans
+
+### 4. As a home cook who wants detailed guidance, it would not be enough for me to just get a list of ingredients. I need to be able to get detailed instructions on how to cook the dish. AI should be leveraged in order to acheive it
+
+**Acceptance Criteria:**
+- I can request AI cooking advice for any recipe by clicking "Ask Alchemist for how to cook it"
+- The AI provides detailed step-by-step cooking instructions tailored to the recipe
+- The AI includes helpful cooking tips, techniques, and timing advice
+- For recipes that already have AI instructions, I can access them via "Check out Alchemist cooking advice" 
+- The AI advice is stored and can be viewed again without re-generating, to conserve usage tokens
+- The interface clearly shows which recipes have AI cooking steps available
