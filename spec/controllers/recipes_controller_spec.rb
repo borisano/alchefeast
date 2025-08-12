@@ -89,11 +89,10 @@ RSpec.describe RecipesController, type: :controller do
         expect(assigns(:popular_categories)).to be_an(Array)
       end
 
-      it 'falls back to hardcoded categories when empty' do
+      it 'returns empty array when popular categories is empty' do
         allow(Recipe).to receive(:popular_categories).and_return([])
         get :index
-        expected_fallback = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ]
-        expect(assigns(:popular_categories)).to eq(expected_fallback)
+        expect(assigns(:popular_categories)).to eq([])
       end
     end
   end
