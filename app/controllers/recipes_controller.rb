@@ -58,9 +58,6 @@ class RecipesController < ApplicationController
     # Get top 5 most popular categories (cached for 1 week)
     @popular_categories = Recipe.popular_categories
 
-    # Fallback to hardcoded categories if cache returns empty
-    @popular_categories = [ "Everyday Cooking", "Yeast Bread", "Mexican Recipes", "Quick Bread", "Chicken Breasts" ] if @popular_categories.empty?
-
     # Set all ingredients for autocomplete (for views that need it)
     @all_ingredients = Ingredient.distinct.pluck(:name).sort
 
