@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_10_120500) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_12_132619) do
   create_table "ingredients", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "created_at"], name: "index_ingredients_on_name_and_created_at"
     t.index ["name"], name: "index_ingredients_on_name", unique: true
   end
 
@@ -47,10 +48,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_10_120500) do
     t.integer "ai_instructions_status", default: 0, null: false
     t.datetime "ai_instructions_generated_at"
     t.text "ai_instructions_error"
+    t.index ["ai_instructions_status", "ai_instructions_generated_at"], name: "index_recipes_on_ai_status_and_generated_at"
     t.index ["ai_instructions_status"], name: "index_recipes_on_ai_instructions_status"
+    t.index ["category", "created_at"], name: "index_recipes_on_category_and_created_at"
+    t.index ["category", "total_time"], name: "index_recipes_on_category_and_total_time"
     t.index ["category"], name: "index_recipes_on_category"
+    t.index ["created_at", "category"], name: "index_recipes_on_created_at_and_category"
+    t.index ["cuisine", "ratings"], name: "index_recipes_on_cuisine_and_ratings"
+    t.index ["cuisine"], name: "index_recipes_on_cuisine"
     t.index ["ratings"], name: "index_recipes_on_ratings"
+    t.index ["title", "category"], name: "index_recipes_on_title_and_category"
     t.index ["title"], name: "index_recipes_on_title"
+    t.index ["total_time", "ratings"], name: "index_recipes_on_total_time_and_ratings"
     t.index ["total_time"], name: "index_recipes_on_total_time"
   end
 
